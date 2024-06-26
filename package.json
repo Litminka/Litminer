@@ -1,0 +1,38 @@
+{
+    "name": "Litminer",
+    "version": "2.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "start": "ts-node src/app.ts",
+        "buildAndStart": "npm run build && ts-node src/app.ts",
+        "start:dev": "ts-node-dev src/app.ts",
+        "start:prod": "node dist/app.js",
+        "build": "tsc",
+        "watch": "tsc -w"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@discordjs/voice": "^0.17.0",
+        "avconv": "^3.1.0",
+        "discord.js": "^14.11.0",
+        "dotenv": "^16.3.1",
+        "ffmpeg": "^0.0.4",
+        "ffmpeg-static": "^5.2.0",
+        "glob": "^7.2.0",
+        "libsodium-wrappers": "^0.7.13",
+        "prisma": "^5.15.1",
+        "redis": "^4.6.14",
+        "ytdl-core": "^4.11.5"
+    },
+    "devDependencies": {
+        "@types/glob": "^8.1.0",
+        "@types/node": "^20.3.1",
+        "ts-node": "^10.9.1",
+        "ts-node-dev": "^2.0.0",
+        "typescript": "^5.1.3",
+        "youtube-search-api": "^1.2.2"
+    }
+}
