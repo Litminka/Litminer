@@ -9,7 +9,7 @@ export default {
         .setDescriptionLocalization("ru", "Пропустить")
         .addIntegerOption(o => o.setName("skipto").setDescription("to which song to skip to?").setRequired(false)),
     execute: async( { client, interaction } ) => {
-        if (!(await AudioService.validate({client, interaction}))) return;
+        if (!(await AudioService.validateConnection({client, interaction}))) return;
         const player = client.lavalink.getPlayer(interaction.guildId);
         
         const current = player.queue.current;

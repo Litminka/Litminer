@@ -7,7 +7,7 @@ export default {
     data: new SlashCommandBuilder()
         .setName("resume").setDescription("Resume track"),
     execute: async ( {client, interaction} ) => {
-        if (!(await AudioService.validate({client, interaction}))) return;
+        if (!(await AudioService.validateConnection({client, interaction}))) return;
 
         const player = client.lavalink.getPlayer(interaction.guildId);
         if(!player.queue.current) return interaction.reply({ ephemeral: true, content: "I'm not playing anything" });

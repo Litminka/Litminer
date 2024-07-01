@@ -10,7 +10,7 @@ export default {
         .setDescriptionLocalization("ru", "Выключить музыку"),
 
     execute: async( { client, interaction } ) => {
-        if (!(await AudioService.validate({client, interaction}))) return;
+        if (!(await AudioService.validateConnection({client, interaction}))) return;
         const player = client.lavalink.getPlayer(interaction.guildId);
         
         // example to apply a filter!
