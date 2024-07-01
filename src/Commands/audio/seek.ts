@@ -9,7 +9,7 @@ export default {
         .addIntegerOption(o => o.setName("rewind").setDescription("Skip specified number of seconds"))
         .addIntegerOption(o => o.setName("position").setDescription("To what position (seconds) to seek to?")),
     execute: async ( {client, interaction} ) => {
-        if (!(await AudioService.validate({client, interaction}))) return;
+        if (!(await AudioService.validateConnection({client, interaction}))) return;
         const player = client.lavalink.getPlayer(interaction.guildId);
         
         if(!player.queue.current) return interaction.reply({ ephemeral: true, content: "I'm not playing anything" });

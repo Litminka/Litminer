@@ -70,7 +70,7 @@ export default class AudioService {
         await player.destroy(message);
     }
 
-    public static async validate({ client, interaction }: ExecuteOptions): Promise<boolean> {
+    public static async validateConnection({ client, interaction }: ExecuteOptions): Promise<boolean> {
         if (!interaction.guildId) return;
         const vcId = (interaction.member as GuildMember)?.voice?.channelId;
         const player = client.lavalink.getPlayer(interaction.guildId);

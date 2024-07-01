@@ -22,7 +22,7 @@ export default {
             { name: "Full sound", value: "Full sound"}
         )),
     execute: async ({client, interaction}) => {
-        if (!(await AudioService.validate({client, interaction}))) return;
+        if (!(await AudioService.validateConnection({client, interaction}))) return;
         
         const player = client.lavalink.getPlayer(interaction.guildId);
         const eqOption = (interaction.options as CommandInteractionOptionResolver).getString("equalizer");
