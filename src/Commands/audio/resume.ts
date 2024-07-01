@@ -5,17 +5,17 @@ import { formatMS_HHMMSS } from "../../Utils/Time";
 
 export default {
     data: new SlashCommandBuilder()
-        .setName("pause").setDescription("Pause track"),
+        .setName("resume").setDescription("Resume track"),
     execute: async ( {client, interaction} ) => {
         if (!(await AudioService.validate({client, interaction}))) return;
+
         const player = client.lavalink.getPlayer(interaction.guildId);
-        
         if(!player.queue.current) return interaction.reply({ ephemeral: true, content: "I'm not playing anything" });
         
-        await AudioService.pause(player);
+        await AudioService.resume(player);
 
         await interaction.reply({
-            content: `Paused at: \`${formatMS_HHMMSS(player.position)}\``
+            content: `Track resumed from ${formatMS_HHMMSS(player.position)}`
         });
     }
 } as Command;

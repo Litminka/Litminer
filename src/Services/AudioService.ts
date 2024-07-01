@@ -1,101 +1,91 @@
-import { AudioPlayer, AudioPlayerStatus, VoiceConnectionConnectingState, VoiceConnectionStatus, createAudioPlayer, createAudioResource, getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
-import { VoiceBasedChannel } from "discord.js";
-import ytdl from "ytdl-core";
-import AudioQueueService, { MusicQueue, Song } from "./AudioQueueService";
 
-export default class AudioService{
+import { ChatInputCommandInteraction, GuildMember } from "discord.js";
+import { Player, EQBand, RepeatMode, EQList } from "lavalink-client";
+import { ExecuteOptions } from "../typings/Client";
 
-    public static async play(url: string, channel: VoiceBasedChannel){
-        
-        let connection = getVoiceConnection(channel.guildId);
-        if (connection){
-            const player = (<VoiceConnectionConnectingState>connection.state).subscription.player;
-            if (player.state.status == AudioPlayerStatus.Playing) {
-                AudioQueueService.addToQueue(channel.guildId, url);
-                return;
-            }
-        }
-        
-        connection = await joinVoiceChannel({
-            channelId: channel.id,
-            guildId: channel.guildId,
-            adapterCreator: channel.guild.voiceAdapterCreator,
-            selfDeaf: false,
-            selfMute: false
-        });
-        const player = createAudioPlayer();
-        connection.subscribe(player);
-        connection.on(VoiceConnectionStatus.Ready, async () => {
-            await AudioQueueService.resetQueue(channel.guildId);
-            await AudioQueueService.addToQueue(channel.guildId, url);
-            await this.playSong(channel.guildId, player);
-        });
-        player.on(AudioPlayerStatus.Idle, async () => {            
-            const currentSong = await AudioQueueService.getCurrent(channel.guildId);
-            const nextSong = await AudioQueueService.getNext(channel.guildId);
-            if (!nextSong || nextSong.id == currentSong.id){
-                console.log('left channel');
-                await AudioQueueService.resetQueue(channel.guildId);
-                player.stop();
-                connection.disconnect();
-                connection.destroy();
-                return;
-            } 
-            await this.playSong(channel.guildId, player);
-        })
+export const EQ = {
+    "Clear" : null,
+    "Earrape Bassboost": EQList.BassboostEarrape,
+    "High Bassboost": EQList.BassboostHigh,
+    "Medium Bassboost": EQList.BassboostMedium,
+    "Low Bassboost": EQList.BassboostLow,
+    "Better Music": EQList.BetterMusic,
+    "Classic": EQList.Classic,
+    "Electronic": EQList.Electronic,
+    "Full sound": EQList.FullSound,
+    "Gaming": EQList.Gaming,
+    "Pop": EQList.Pop,
+    "Rock": EQList.Rock,
+}
+
+export interface SeekOptions{
+    rewind: number | null;
+    position: number | null;
+}
+
+export default class AudioService {
+
+    public static async setEQ(player: Player, eqFilter: EQBand[]) {
+        await player.filterManager.setEQ(eqFilter);
     }
 
-    public static async playSong(guildId: string, player: AudioPlayer){
-        const song = await AudioQueueService.getNext(guildId);
-        if (!song) return false;
-        const stream = ytdl(song.url, {
-            filter: 'audioonly',
-            dlChunkSize: 0,
-            requestOptions: {
-                headers:{
-                    cookie: process.env.YOUTUBE_COOKIE,
-                    'x-youtube-identity-token': process.env.YOUTUBE_ID_TOKEN
-                }
-            }
-        });
-        
-        const audio = createAudioResource(stream);
-        await AudioQueueService.setCurrent(guildId, song);
-        player.play(audio);
+    public static async clearEQ(player: Player) {
+        await player.filterManager.clearEQ();
+    }
+
+    public static async setRepeatMode(player: Player, mode: RepeatMode) {
+        await player.setRepeatMode(mode);
+    }
+
+    public static async pause(player: Player) {
+        await player.pause();
+    }
+
+    public static async resume(player: Player) {
+        await player.resume();
+    }
+
+    public static async skip(player: Player, shouldSkip: number) {
+        await player.skip(shouldSkip);
+    }
+
+    public static async seek(player: Player, {rewind, position}: SeekOptions) {
+        let seekTo = 0;
+
+        if (rewind == null && position == null) {
+            seekTo = player.position + 5 * 1000;
+        }
+
+        if (rewind != null) {
+            seekTo = player.position + rewind * 1000;
+        }
+
+        if (position != null) {
+            seekTo = position * 1000;
+        }
+        await player.seek(seekTo)
+    }
+
+    public static async stop(player: Player, message?: string) {
+        await player.destroy(message);
+    }
+
+    public static async validate({ client, interaction }: ExecuteOptions): Promise<boolean> {
+        if (!interaction.guildId) return;
+        const vcId = (interaction.member as GuildMember)?.voice?.channelId;
+        const player = client.lavalink.getPlayer(interaction.guildId);
+        if (!player) {
+            interaction.reply({ ephemeral: true, content: "I'm not connected" });
+            return false;
+        }
+        if (!vcId) {
+            interaction.reply({ ephemeral: true, content: "Join a Voice Channel " });
+            return false;
+        }
+        if (player.voiceChannelId !== vcId) {
+            interaction.reply({ ephemeral: true, content: "You need to be in my Voice Channel" })
+            return false;
+        }
         return true;
-    }
-
-    public static async pause(guildId: string){
-        const connection = getVoiceConnection(guildId);
-        const player = (<VoiceConnectionConnectingState>connection.state).subscription.player;
-        
-        if (player.state.status = AudioPlayerStatus.Playing){
-            player.pause();
-        }
-    }
-
-    public static async unpause(guildId: string){
-        const connection = getVoiceConnection(guildId);
-        const player = (<VoiceConnectionConnectingState>connection.state).subscription.player;
-        
-        if (player.state.status = AudioPlayerStatus.Paused){
-            player.unpause();
-        }
-    }
-
-    public static async stop(guildId: string){
-        const connection = getVoiceConnection(guildId);
-        const player = (<VoiceConnectionConnectingState>connection.state).subscription.player;
-        
-        if (player.state.status = AudioPlayerStatus.Playing){
-            player.stop();
-            connection.disconnect();
-            connection.destroy();
-        }
-    }
-
-    public static async skip(guildId: string){
-        const connection = getVoiceConnection(guildId);
-        const player = (<VoiceConnectionConnectingState>connection.state).subscription.player;
     }
 }
