@@ -1,6 +1,4 @@
 require("dotenv").config();
-import { ExtendedClient } from "./Structures/Client";
+import { BotClient } from "./Structures/BotClient";
 
-export const client = new ExtendedClient();
-
-client.Start();
+export const client = new BotClient();

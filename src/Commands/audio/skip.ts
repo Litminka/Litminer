@@ -1,26 +1,29 @@
-import { VoiceConnectionConnectingState, getVoiceConnection } from "@discordjs/voice";
-import { Command } from "../../Structures/Command";
+import { Command } from "../../typings/Client";
 import AudioService from "../../Services/AudioService";
+import { CommandInteractionOptionResolver, GuildMember, SlashCommandBuilder } from "discord.js";
 
-export default new Command({
-    name: "skip",
-    description: "Skip music",
-    descriptionLocalizations: {
-        ru: "Пропустить"
-    },
-    run: async( {interaction} ) => {
-        const connection = getVoiceConnection(interaction.guildId);
-        const player = (<VoiceConnectionConnectingState>connection.state).subscription.player;
+export default {
+    data: new SlashCommandBuilder()
+        .setName("skip")
+        .setDescription("Skip music")
+        .setDescriptionLocalization("ru", "Пропустить")
+        .addIntegerOption(o => o.setName("skipto").setDescription("to which song to skip to?").setRequired(false)),
+    execute: async( { client, interaction } ) => {
+        if (!(await AudioService.validateConnection({client, interaction}))) return;
+        const player = client.lavalink.getPlayer(interaction.guildId);
         
-        const success = await AudioService.playSong(interaction.guildId, player);
-        if (!success){
-            interaction.followUp({
-                content: "Nothing to skip",
-            });
-            return;
-        }
-        interaction.followUp({
-            content: "Audio stopped successful",
+        const current = player.queue.current;
+        const nextTrack = player.queue.tracks[0];
+        
+        if(!nextTrack) return interaction.reply({ ephemeral: true, content: `No Tracks to skip to`});
+        
+        const needToSkip = (interaction.options as CommandInteractionOptionResolver).getInteger("skipto") || 0;
+        await AudioService.skip(player, needToSkip);
+
+        await interaction.reply({
+            ephemeral: true, content: current ? 
+            `Skipped [\`${current?.info.title}\`](<${current?.info.uri}>) -> [\`${nextTrack?.info.title}\`](<${nextTrack?.info.uri}>)` :
+            `Skipped to [\`${nextTrack?.info.title}\`](<${nextTrack?.info.uri}>)`
         });
     }
-});
+} as Command;

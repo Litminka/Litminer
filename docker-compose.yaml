@@ -36,3 +36,20 @@ services:
         published: 6380
     networks:
       - litminka-net
+  
+  lavalink:
+    container_name: lavalink
+    image: ghcr.io/lavalink-devs/lavalink:4
+    environment:
+      _JAVA_OPTIONS: -Xmx2G
+      SERVER_PORT: 2333
+      LAVALINK_SERVER_PASSWORD: "lava"
+    volumes:
+      - ./application.yml:/opt/Lavalink/application.yml
+      - ./plugins/:/opt/Lavalink/plugins/
+    networks: 
+      - litminka-net
+    expose: 
+      - 2333
+    ports: 
+      - "2333:2333"

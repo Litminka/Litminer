@@ -1,14 +1,15 @@
-import { Command } from "../../Structures/Command";
+import { SlashCommandBuilder } from "discord.js";
+import { Command } from "../../typings/Client";
 
-export default new Command({
-    name: "ping",
-    description: "reply with pong",
-    descriptionLocalizations: {
-        ru: "Ответить Pong"
-    },
-    run: async( {interaction} ) => {
-        interaction.followUp({
+export default {
+    data: new SlashCommandBuilder()
+        .setName("ping")
+        .setDescription("reply with pong")
+        .setDescriptionLocalization("ru", "Ответить Pong"),
+
+    execute: async( { client, interaction }) => {
+        interaction.reply({
             content: "Pong!",
         });
     }
-});
+} as Command;
