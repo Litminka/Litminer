@@ -1,4 +1,4 @@
-import { ApplicationCommandDataResolvable, Client, ClientEvents, Collection, GatewayIntentBits, Guild } from "discord.js";
+import { Client, GatewayIntentBits, IntentsBitField } from "discord.js";
 import { promisify } from "util";
 import glob from "glob";
 import { LavalinkManager, MiniMap } from "lavalink-client";
@@ -6,8 +6,7 @@ import { Command, SubCommand, Event } from "../typings/Client";
 import { RedisClientType, createClient } from "redis";
 import { autoPlayFunction, requesterTransformer } from "../Utils/OptionalFunctions";
 import { myCustomStore, myCustomWatcher } from "../Utils/CustomClasses";
-import { join } from "path";
-import { readdirSync } from "fs";
+
 import { NodesEvents } from "../LavalinkEvents/Nodes";
 import { PlayerEvents } from "../LavalinkEvents/Player";
 
@@ -40,11 +39,9 @@ export class BotClient extends Client {
             }
         });
         this.redis.connect();
-        this.redis.on("error", (err) => console.log('Redis Client Error', err));
+        //this.redis.on("error", (err) => console.log('Redis Client Error', err));
 
         this.LoadLavalink();
-
-        //this.guilds.cache.clear();
 
         this.RegisterModules();
 
@@ -149,5 +146,9 @@ export class BotClient extends Client {
 
             this.on(event.name, event.execute.bind(null, this));
         });
+    }
+
+    public async i(){
+        this.options.intents.add(GatewayIntentBits.GuildEmojisAndStickers);
     }
 }
