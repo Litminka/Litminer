@@ -24,6 +24,6 @@ export default class BaseEmbeds{
     }
 
     public static Info(message: string): EmbedBuilder{
-        return BaseEmbeds.TimestampEmbed(Colors.Purple, `❗ ${message}`); 
+        return BaseEmbeds.TimestampEmbed(Colors.Aqua, `❗ ${message}`); 
     }
 }

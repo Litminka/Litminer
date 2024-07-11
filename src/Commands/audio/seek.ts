@@ -1,7 +1,8 @@
-import { CommandInteractionOptionResolver, GuildMember, SlashCommandBuilder } from "discord.js";
+import { CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
 import { formatMS_HHMMSS } from "../../Utils/Time";
 import { Command } from "../../typings/Client";
 import AudioService, { SeekOptions } from "../../Services/AudioService";
+import BaseEmbeds from "../../Embeds/BaseEmbeds";
 
 export default {
     data: new SlashCommandBuilder()
@@ -12,13 +13,21 @@ export default {
         if (!(await AudioService.validateConnection({client, interaction}))) return;
         const player = client.lavalink.getPlayer(interaction.guildId);
         
-        if(!player.queue.current) return interaction.reply({ ephemeral: true, content: "I'm not playing anything" });
+        if(!player.queue.current) 
+            return interaction.reply({ 
+                ephemeral: true,
+                embeds: [
+                    BaseEmbeds.Error(`I'm not playing anything`)
+                ] 
+            });
         const rewind = (interaction.options as CommandInteractionOptionResolver).getInteger("rewind")
         const position = (interaction.options as CommandInteractionOptionResolver).getInteger("position");
 
         await AudioService.seek(player, {rewind, position} as SeekOptions);
         await interaction.reply({
-            content: `${interaction.member.user} seeked to: \`${formatMS_HHMMSS(player.position)}\``
+            embeds: [
+                BaseEmbeds.Success(`${interaction.member.user} seeked to: \`${formatMS_HHMMSS(player.position)}\``)
+            ] 
         });
     }
 } as Command;

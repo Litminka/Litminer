@@ -1,7 +1,8 @@
-import { CommandInteractionOptionResolver, GuildMember, SlashCommandBuilder } from "discord.js";
-import { EQList } from "lavalink-client";
+import { CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
+
 import { Command } from "../../typings/Client";
 import AudioService, { EQ } from "../../Services/AudioService";
+import BaseEmbeds from "../../Embeds/BaseEmbeds";
 
 export default { 
     data: new SlashCommandBuilder()
@@ -36,7 +37,9 @@ export default {
         }
         
         await interaction.reply({
-            content: `✅ ${response}`
+            embeds: [
+                BaseEmbeds.Success(response)
+            ]
         })
     }
 

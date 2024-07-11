@@ -1,7 +1,8 @@
 
-import { GuildMember, SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import { Command } from "../../typings/Client";
 import AudioService from "../../Services/AudioService";
+import BaseEmbeds from "../../Embeds/BaseEmbeds";
 
 export default {
     data: new SlashCommandBuilder()
@@ -17,6 +18,10 @@ export default {
         await AudioService.stop(player, `${interaction.user.username} stopped the Player`);
 
         // and it is good again!
-        interaction.reply({ content: "Stopped the player" });
+        await interaction.reply({ 
+            embeds: [
+                BaseEmbeds.Success(`Stopped the player`)
+            ] 
+        });
     }
 } as Command;

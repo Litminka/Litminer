@@ -1,7 +1,8 @@
-import { CommandInteractionOptionResolver, GuildMember, SlashCommandBuilder } from "discord.js";
+import { CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
 import { Command } from "../../typings/Client";
 import { RepeatMode } from "lavalink-client/dist/types";
 import AudioService from "../../Services/AudioService";
+import BaseEmbeds from "../../Embeds/BaseEmbeds";
 
 export default {
     data: new SlashCommandBuilder()
@@ -10,13 +11,22 @@ export default {
     execute: async ( { client, interaction } ) => {
         if (!(await AudioService.validateConnection({client, interaction}))) return;
         const player = client.lavalink.getPlayer(interaction.guildId);
-        if(!player.queue.current) return interaction.reply({ ephemeral: true, content: "I'm not playing anything" });
+        if(!player.queue.current) 
+            return interaction.reply({ 
+                ephemeral: true,
+                embeds: [
+                    BaseEmbeds.Error(`I'm not playing anything`)
+                ] 
+            });
         const mode = (interaction.options as CommandInteractionOptionResolver).getString("repeatmode") as RepeatMode;
 
         await AudioService.setRepeatMode(player, mode);
 
         await interaction.reply({
-            ephemeral: true, content: `Set repeat mode to ${player.repeatMode}`
+            ephemeral: true, 
+            embeds: [
+                BaseEmbeds.Success(`Set repeat mode to ${player.repeatMode}`)
+            ]
         });
     }
 } as Command;

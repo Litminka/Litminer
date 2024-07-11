@@ -2,6 +2,7 @@
 import { ChatInputCommandInteraction, GuildMember } from "discord.js";
 import { Player, EQBand, RepeatMode, EQList } from "lavalink-client";
 import { ExecuteOptions } from "../typings/Client";
+import BaseEmbeds from "../Embeds/BaseEmbeds";
 
 export const EQ = {
     "Clear" : null,
@@ -75,15 +76,29 @@ export default class AudioService {
         const vcId = (interaction.member as GuildMember)?.voice?.channelId;
         const player = client.lavalink.getPlayer(interaction.guildId);
         if (!player) {
-            interaction.reply({ ephemeral: true, content: "I'm not connected" });
+            interaction.reply({ 
+                ephemeral: true, 
+                embeds: [
+                    BaseEmbeds.Error(`I'm not connected`)
+                ] 
+            });
             return false;
         }
         if (!vcId) {
-            interaction.reply({ ephemeral: true, content: "Join a Voice Channel " });
+            interaction.reply({ 
+                ephemeral: true,
+                embeds: [
+                    BaseEmbeds.Error(`Join a Voice Channel`)
+                ] 
+             });
             return false;
         }
         if (player.voiceChannelId !== vcId) {
-            interaction.reply({ ephemeral: true, content: "You need to be in my Voice Channel" })
+            interaction.reply({ ephemeral: true, 
+                embeds: [
+                BaseEmbeds.Error(`You need to be in my Voice Channel`)
+                ]
+            })
             return false;
         }
         return true;
