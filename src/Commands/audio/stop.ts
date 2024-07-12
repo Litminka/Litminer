@@ -15,7 +15,7 @@ export default {
         const player = client.lavalink.getPlayer(interaction.guildId);
         
         // example to apply a filter!
-        await AudioService.stop(player, `${interaction.user.username} stopped the Player`);
+        await AudioService.stop(player);
 
         // and it is good again!
         await interaction.reply({ 
