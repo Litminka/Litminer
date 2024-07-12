@@ -1,6 +1,6 @@
 
-import { ChatInputCommandInteraction, GuildMember } from "discord.js";
-import { Player, EQBand, RepeatMode, EQList } from "lavalink-client";
+import { ChatInputCommandInteraction, GuildMember, User } from "discord.js";
+import { Player, EQBand, RepeatMode, EQList, PlayOptions, SearchPlatform, SearchQuery, SearchResult, UnresolvedSearchResult } from "lavalink-client";
 import { ExecuteOptions } from "../typings/Client";
 import BaseEmbeds from "../Embeds/BaseEmbeds";
 
@@ -67,8 +67,16 @@ export default class AudioService {
         await player.seek(seekTo)
     }
 
-    public static async stop(player: Player, message?: string) {
-        await player.destroy(message);
+    public static async stop(player: Player) {
+        await player.stopPlaying(true, false);
+    }
+
+    public static async search(player: Player, query: SearchQuery, requestUser: User): Promise<SearchResult | UnresolvedSearchResult>{
+        return await player.search(query, requestUser)
+    }
+
+    public static async play(player: Player, options?: Partial<PlayOptions>){
+        await player.play(options);
     }
 
     public static async validateConnection({ client, interaction }: ExecuteOptions): Promise<boolean> {

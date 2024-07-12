@@ -16,7 +16,7 @@ const globPromise = promisify(glob);
 export class BotClient extends Client {
     lavalink: LavalinkManager;
     commands: MiniMap<string, Command | SubCommand>;
-    redis: RedisClientType | MiniMap<string, string>;
+    redis: RedisClientType;
     defaultVolume: number;
 
     constructor() {
@@ -73,7 +73,7 @@ export class BotClient extends Client {
                 volumeDecrementer: 0.75, // on client 100% == on lavalink 75%
                 requesterTransformer: requesterTransformer,
                 onDisconnect: {
-                    autoReconnect: true, // automatically attempts a reconnect, if the bot disconnects from the voice channel, if it fails, it get's destroyed
+                    autoReconnect: false, // automatically attempts a reconnect, if the bot disconnects from the voice channel, if it fails, it get's destroyed
                     destroyPlayer: true // overrides autoReconnect and directly destroys the player if the bot disconnects from the vc
                 },
                 onEmptyQueue: {
@@ -146,9 +146,5 @@ export class BotClient extends Client {
 
             this.on(event.name, event.execute.bind(null, this));
         });
-    }
-
-    public async i(){
-        this.options.intents.add(GatewayIntentBits.GuildEmojisAndStickers);
     }
 }

@@ -1,6 +1,5 @@
 import {  TextChannel } from "discord.js";
 import { BotClient } from "../Structures/BotClient";
-import EmbedService from "../Embeds/MusicEmbeds";
 import MusicEmbeds from "../Embeds/MusicEmbeds";
 import ClientEmbeds from "../Embeds/ClientEmbeds";
 
@@ -37,7 +36,7 @@ export function PlayerEvents(client:BotClient) {
         if(!channel) return;
         channel.send({
             embeds: [ 
-                EmbedService.TrackStarted(track) 
+                MusicEmbeds.TrackStarted(track) 
             ]
         })
     }).on("trackEnd", (player, track, payload) => {
