@@ -3,6 +3,7 @@ import AudioService from "../../Services/AudioService";
 import { SlashCommandBuilder } from "discord.js";
 import { formatMS_HHMMSS } from "../../Utils/Time";
 import BaseEmbeds from "../../Embeds/BaseEmbeds";
+import MusicEmbeds from "../../Embeds/MusicEmbeds";
 
 export default {
     data: new SlashCommandBuilder()
@@ -23,7 +24,7 @@ export default {
 
         await interaction.reply({
             embeds: [
-                BaseEmbeds.Info(`Paused at: \`${formatMS_HHMMSS(player.position)}\``)
+                MusicEmbeds.TrackPaused(player.queue.current, formatMS_HHMMSS(player.position))
             ] 
         });
     }

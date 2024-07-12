@@ -2,8 +2,12 @@ import { ApplicationCommandOptionType, CommandInteractionOptionResolver, GuildMe
 import { Command } from "../../typings/Client";
 import { formatMS_HHMMSS } from "../../Utils/Time";
 import { SearchPlatform, SearchResult, Track } from "lavalink-client";
+import AudioService from "../../Services/AudioService";
+import BaseEmbeds from "../../Embeds/BaseEmbeds";
+import AutocompleteService from "../../Services/AutocompleteService";
+import MusicEmbeds from "../../Embeds/MusicEmbeds";
 
-const autocompleteMap = new Map();
+
 
 export default {
     data: new SlashCommandBuilder()
@@ -21,27 +25,46 @@ export default {
         .addStringOption(o => o.setName("query").setDescription("What to play?").setAutocomplete(true).setRequired(true)),
 
         execute: async ( {client, interaction} ) => {
+            // #region Validation
             if(!interaction.guildId) return;
             
             const vcId = (interaction.member as GuildMember)?.voice?.channelId;
-            if(!vcId) return interaction.reply({ ephemeral: true, content: `Join a voice Channel` });
+            if(!vcId) 
+                return interaction.reply({ 
+                   ephemeral: true,
+                   embeds: [
+                       BaseEmbeds.Error(`Join a Voice Channel`)
+                   ] 
+                });
     
             const vc = (interaction.member as GuildMember)?.voice?.channel as VoiceChannel;
-            if(!vc.joinable || !vc.speakable) return interaction.reply({ ephemeral: true, content: "I am not able to join your channel / speak in there." });
-            
-            
+            if(!vc.joinable || !vc.speakable) 
+                return interaction.reply({ 
+                    ephemeral: true,
+                    embeds: [
+                        BaseEmbeds.Error(`I am not able to join your channel / speak in there.`)
+                    ] 
+                });
+            // #endregion
+            // #region Getting track query
             const query = (interaction.options as CommandInteractionOptionResolver).getString("query") as string;
             
-            if(query === "nothing_found") return interaction.reply({ content: `No Tracks found`, ephemeral: true });
-            if(query === "join_vc") return interaction.reply({ content: `You joined a VC, but redo the Command please.`, ephemeral: true });
-            
-            const fromAutoComplete =  (Number(query.replace("autocomplete_", "")) >= 0 && autocompleteMap.has(`${interaction.user.id}_res`)) && autocompleteMap.get(`${interaction.user.id}_res`);
-            if(autocompleteMap.has(`${interaction.user.id}_res`)) {
-                if(autocompleteMap.has(`${interaction.user.id}_timeout`)) clearTimeout(autocompleteMap.get(`${interaction.user.id}_timeout`));
-                autocompleteMap.delete(`${interaction.user.id}_res`);
-                autocompleteMap.delete(`${interaction.user.id}_timeout`);
-            }
-
+            if(query === "nothing_found") 
+                return interaction.reply({ 
+                    ephemeral: true,
+                    embeds:[
+                        BaseEmbeds.Error("No tracks found")
+                    ]
+                });
+            if(query === "join_vc") 
+                return interaction.reply({ 
+                    ephemeral: true,
+                    embeds:[
+                        BaseEmbeds.Error("You joined a VC, but redo the Command please.")
+                    ]
+                });
+            // #endregion
+            // #region AudioPlayer create
             const player = client.lavalink.getPlayer(interaction.guildId) || await client.lavalink.createPlayer({
                 guildId: interaction.guildId, 
                 voiceChannelId: vcId, 
@@ -51,45 +74,47 @@ export default {
                 volume: client.defaultVolume,  // default volume
                 instaUpdateFiltersFix: true, // optional
                 applyVolumeAsFilter: false, // if true player.setVolume(54) -> player.filters.setVolume(0.54)
-                // node: "YOUR_NODE_ID",
-                // vcRegion: (interaction.member as GuildMember)?.voice.channel?.rtcRegion!
             });
             
             const connected = player.connected;
     
             if(!connected) await player.connect();
-    
             if(player.voiceChannelId !== vcId) return interaction.reply({ ephemeral: true, content: "You need to be in my Voice Channel" });
-
+            // #endregion
+            // #region Searching for track
             const src = (interaction.options as CommandInteractionOptionResolver).getString("source") as SearchPlatform|undefined;
-            console.log(`[Autoresponse] - ${fromAutoComplete as SearchResult}`);
+            const fromAutoComplete =  (Number(query.replace("autocomplete_", "")) >= 0 ) && AutocompleteService.GetMap(interaction.user.id);
             
             const response = (fromAutoComplete || await player.search({ query: query, source: src }, interaction.user)) as SearchResult;
-            //console.log("[Response] - ")
-            //response.tracks.forEach((track) => {
-            //    console.log(track.info.title);
-            //})
-
-            if(!response || !response.tracks?.length) return interaction.reply({ content: `No Tracks found`, ephemeral: true });
             
+            if(!response || !response.tracks?.length) return interaction.reply({ content: `No Tracks found`, ephemeral: true });
+            // #endregion
+            // #region Adding tracks to queue
             const track: Track = (response.loadType !== "playlist") ? response.tracks[fromAutoComplete ? Number(query.replace("autocomplete_", "")) : 0] : response.tracks[0] ;
 
             await player.queue.add(response.loadType === "playlist" ? response.tracks : track);
-    
+            
             await interaction.reply({
-                content: response.loadType === "playlist" 
-                    ? `✅ Added [${response.tracks.length}] Tracks${response.playlist?.title ? ` - from the ${response.pluginInfo.type || "Playlist"} ${response.playlist.uri ? `[\`${response.playlist.title}\`](<${response.playlist.uri}>)` : `\`${response.playlist.title}\``}` : ""} at \`#${player.queue.tracks.length-response.tracks.length}\`` 
-                    : `✅ Added [\`${track.info.title}\`](<${track.info.uri}>) by \`${track.info.author}\` at \`#${player.queue.tracks.length}\`` 
+                embeds:[
+                    response.loadType === "playlist" 
+                        ? MusicEmbeds.PlaylistAdded(response.playlist, response.tracks, player.queue.tracks.length) 
+                        : MusicEmbeds.TrackAdded(track, player.queue.tracks.length)
+                ] 
             });
-    
-            if(!player.playing) await player.play(connected ? { volume: client.defaultVolume, paused: false } : undefined);
+            // #endregion
+            const playOptions = connected ? { volume: client.defaultVolume, paused: false } : undefined
+            if(!player.playing) await AudioService.play(player, playOptions);
         },
     autocomplete: async ( {client, interaction} ) => {
+        // #region Validation
         if(!interaction.guildId) return;
         const vcId = (interaction.member as GuildMember)?.voice?.channelId;
         if(!vcId) return interaction.respond([{ name: `Join a voice Channel`, value: "join_vc" }]);
-
+        // #endregion
+        // #region Getting track query
         const focussedQuery = interaction.options.getFocused();
+        // #endregion
+        // #region AudioPlayer create
         const player = client.lavalink.getPlayer(interaction.guildId) || await client.lavalink.createPlayer({
             guildId: interaction.guildId, voiceChannelId: vcId, textChannelId: interaction.channelId, // in what guild + channel(s)
             selfDeaf: true, selfMute: false, volume: client.defaultVolume, instaUpdateFiltersFix: true // configuration(s)
@@ -98,22 +123,23 @@ export default {
         if(!player.connected) await player.connect();
 
         if(player.voiceChannelId !== vcId) return interaction.respond([{ name: `You need to be in my Voice Channel`, value: "join_vc" }]);
-
-        const res = await player.search({ query: focussedQuery, source: interaction.options.getString("source") as SearchPlatform }, interaction.user) as SearchResult;
+        // #endregion
+        // #region Searching for tracks
+        const res = await AudioService.search(
+            player, 
+            { query: focussedQuery, source: interaction.options.getString("source") as SearchPlatform },
+            interaction.user
+        ) as SearchResult;
         
         if(!res.tracks.length) return await interaction.respond([{ name: `No Tracks found`, value: "nothing_found" }]);
-        // handle the res
-        if(autocompleteMap.has(`${interaction.user.id}_timeout`)) 
-            clearTimeout(autocompleteMap.get(`${interaction.user.id}_timeout`));
-        autocompleteMap.set(`${interaction.user.id}_res`, res);
-        autocompleteMap.set(`${interaction.user.id}_timeout`, setTimeout(() => {
-            autocompleteMap.delete(`${interaction.user.id}_res`);
-            autocompleteMap.delete(`${interaction.user.id}_timeout`);
-        }, 25000));
+        // #endregion
+        // #region Setting autocomplete map
+        AutocompleteService.SetMap(interaction.user.id, res);
         await interaction.respond(
             res.loadType === "playlist" ? 
             [{ name: `Playlist [${res.tracks.length} Tracks] - ${res.playlist?.title}`, value: `autocomplete_0`}]
             : res.tracks.map((t:Track, i) => ({ name: `[${formatMS_HHMMSS(t.info.duration)}] ${t.info.title} (by ${t.info.author || "Unknown-Author"})`.substring(0, 100), value: `autocomplete_${i}` })).slice(0, 25)
         );
+        // #endregion
     }
 } as Command;
