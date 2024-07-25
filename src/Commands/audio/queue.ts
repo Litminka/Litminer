@@ -41,8 +41,9 @@ export default {
             .setLabel("Next")
             .setEmoji(`➡️`);
 
+        prev.setDisabled(true);
         const row = new ActionRowBuilder<ButtonBuilder>().addComponents(prev, next);
-
+    
         const trackQueue = new EmbedQueue(player.queue);
 
         const response = await interaction.reply({
@@ -59,46 +60,36 @@ export default {
             button.deferUpdate();
             const selection = button.customId;
             console.log(`${selection} pressed`);
-            switch (selection) {
-                case "previous": {
-                    console.log(`shifting backwards`);
-                    trackQueue.ShiftBy(-5);
-                    if (trackQueue.currentIndex < 5)
-                        row.components.forEach(button => {
-                            if (button.data.label == `Previous`)
-                                button.setDisabled(true);
-                            else
-                                button.setDisabled(false);
-                        })
-                    else
-                        row.components.forEach(button => {
-                            button.setDisabled(false);
-                        })
-                    return await response.edit({
-                        embeds: [MusicEmbeds.PrintQueue(trackQueue)],
-                        components: [row]
-                    });
-                }
-                case "next": {
-                    console.log(`shifting forward`);
-                    trackQueue.ShiftBy(5);
-                    if (trackQueue.currentIndex > trackQueue.tracks.length - 5)
-                        row.components.forEach(button => {
-                            if (button.data.label == `Next`)
-                                button.setDisabled(true);
-                            else
-                                button.setDisabled(false);
-                        })
-                    else
-                        row.components.forEach(button => {
-                            button.setDisabled(false);
-                        })
-                    return await response.edit({
-                        embeds: [MusicEmbeds.PrintQueue(trackQueue)],
-                        components: [row]
-                    });
-                }
+
+            const shifts = {
+                previous: -5,
+                next: 5,
             }
+            
+            const shift: number = shifts[selection];
+            trackQueue.ShiftBy(shift);
+            const [prevButton, nextButton] = row.components;
+
+            nextButton.setDisabled(false);
+            prevButton.setDisabled(false);
+
+            if (trackQueue.currentIndex < 5){
+                prevButton.setDisabled(true);
+            }
+
+            if (trackQueue.currentIndex > trackQueue.tracks.length - 5) {
+                nextButton.setDisabled(true);
+            }
+
+            if (trackQueue.tracks.length < 5) {
+                nextButton.setDisabled(true);
+                prevButton.setDisabled(true);
+            }
+
+            return await response.edit({
+                embeds: [MusicEmbeds.PrintQueue(trackQueue)],
+                components: [row]
+            });
         });
 
         collector.on("end", (async) => {

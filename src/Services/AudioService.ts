@@ -27,10 +27,8 @@ export interface SeekOptions{
 export default class AudioService {
 
     public static async setEQ(player: Player, eqFilter: EQBand[]) {
-        if (eqFilter == null)
-            await player.filterManager.clearEQ();
-        else
-            await player.filterManager.setEQ(eqFilter);
+        if (eqFilter == null) return player.filterManager.clearEQ();
+        return player.filterManager.setEQ(eqFilter);
     }
 
     public static async setRepeatMode(player: Player, mode: RepeatMode) {

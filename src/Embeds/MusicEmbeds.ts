@@ -75,9 +75,10 @@ export default class MusicEmbeds {
         const printQueue = queue.tracks.slice(minIndex, maxIndex);
         const embed = BaseEmbeds.Info("Queue");
         for (let embedTrack of printQueue){
-            let trackTitle = embedTrack.track.info.title;
+            const title = embedTrack.track.info.title;
             const trackAuthor = embedTrack.track.info.author;
-            if (embedTrack.isCurrent) trackTitle = `\`\`\`css\n [${trackTitle}] \`\`\``;
+            let trackTitle = `\`\`\`\n ${title} \`\`\``;
+            if (embedTrack.isCurrent) trackTitle = `\`\`\`css\n [${title}] \`\`\``;
             embed.addFields([
                 {
                     name: `**${embedTrack.position}. ${trackAuthor != undefined ? trackAuthor : `\u200B`}**`, 
