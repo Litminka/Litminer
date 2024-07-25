@@ -30,11 +30,7 @@ export default {
 
         let response = `Applied the ${eqOption} Equalizer`; 
         
-        if (EQ[eqOption] == null){
-           await AudioService.clearEQ(player);
-        } else{
-           await AudioService.setEQ(player, EQ[eqOption]);
-        }
+        await AudioService.setEQ(player, EQ[eqOption]);
         
         await interaction.reply({
             embeds: [
