@@ -80,7 +80,7 @@ export class BotClient extends Client {
                     destroyAfterMs: 1000, // 0 === instantly destroy | don't provide the option, to don't destroy the player
                     autoPlayFunction: autoPlayFunction,
                 },
-                useUnresolvedData: true
+                useUnresolvedData: false
             },
             queueOptions: {
                 maxPreviousTracks: 10,
@@ -100,6 +100,15 @@ export class BotClient extends Client {
             }
         });
         //console.log("lavalink connected");
+    }
+
+    public async Disconnect(){
+        console.log(`disconnecting lavalink`);
+        await this.lavalink.nodeManager.disconnectAll();
+        console.log(`disconnecting redis`);
+        await this.redis.quit();
+        console.log(`disconnecting bot`);
+        //await this.destroy();
     }
 
     private async ImportFile(path: string) {
