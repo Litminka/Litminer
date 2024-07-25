@@ -1,8 +1,8 @@
 import { Colors, EmbedBuilder } from "discord.js";
-import { Player, PlaylistInfo, Track } from "lavalink-client";
+import { Player, PlaylistInfo, Queue, Track } from "lavalink-client";
 import { formatMS_HHMMSS } from "../Utils/Time";
-import { CustomRequester } from "../typings/Client";
-import BaseEmbeds from "./BaseEmbeds";
+import { CustomRequester, EmbededTrack } from "../typings/Client";
+import BaseEmbeds, { EmbedQueue } from "./BaseEmbeds";
 
 export default class MusicEmbeds {
 
@@ -66,5 +66,26 @@ export default class MusicEmbeds {
 
     public static QueueEnded(): EmbedBuilder{
         return BaseEmbeds.Error("Queue Ended");
+    }
+
+    public static PrintQueue(queue: EmbedQueue): EmbedBuilder{
+        console.log(queue);
+        const minIndex = queue.currentIndex >= 5 ? queue.currentIndex - 5 : 0;
+        const maxIndex = queue.currentIndex <= queue.tracks.length - 5 ? queue.currentIndex + 5 : queue.tracks.length;
+        const printQueue = queue.tracks.slice(minIndex, maxIndex);
+        const embed = BaseEmbeds.Info("Queue");
+        for (let embedTrack of printQueue){
+            let trackTitle = embedTrack.track.info.title;
+            const trackAuthor = embedTrack.track.info.author;
+            if (embedTrack.isCurrent) trackTitle = `\`\`\`css\n [${trackTitle}] \`\`\``;
+            embed.addFields([
+                {
+                    name: `**${embedTrack.position}. ${trackAuthor != undefined ? trackAuthor : `\u200B`}**`, 
+                    //value: `\`\`\`css\n ${embedTrack.position}: ${trackTitle} \`\`\``
+                    value: `${trackTitle}`
+                }
+            ]);
+        }
+        return embed;
     }
 }
