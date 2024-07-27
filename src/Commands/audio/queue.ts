@@ -33,7 +33,8 @@ export default {
             .setCustomId("previous")
             .setStyle(ButtonStyle.Primary)
             .setEmoji(`⬅️`)
-            .setLabel("Previous");
+            .setLabel("Previous")
+            .setDisabled(true);
 
         const next = new ButtonBuilder()
             .setCustomId("next")
@@ -41,7 +42,6 @@ export default {
             .setLabel("Next")
             .setEmoji(`➡️`);
 
-        prev.setDisabled(true);
         const row = new ActionRowBuilder<ButtonBuilder>().addComponents(prev, next);
     
         const trackQueue = new EmbedQueue(player.queue);
@@ -53,7 +53,7 @@ export default {
 
         const collector = response.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 3600000,
+            time: 600000,
         });
 
         collector.on("collect", async (button) => {
