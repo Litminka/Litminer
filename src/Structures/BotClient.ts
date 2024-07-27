@@ -4,11 +4,11 @@ import glob from "glob";
 import { LavalinkManager, MiniMap } from "lavalink-client";
 import { Command, SubCommand, Event } from "../typings/Client";
 import { RedisClientType, createClient } from "redis";
-import { autoPlayFunction, requesterTransformer } from "../Utils/OptionalFunctions";
-import { myCustomStore, myCustomWatcher } from "../Utils/CustomClasses";
+import { autoPlayFunction, requesterTransformer } from "../utils/OptionalFunctions";
+import { myCustomStore, myCustomWatcher } from "../utils/CustomClasses";
 
-import { NodesEvents } from "../LavalinkEvents/Nodes";
-import { PlayerEvents } from "../LavalinkEvents/Player";
+import { NodesEvents } from "../lavalinkEvents/Nodes";
+import { PlayerEvents } from "../lavalinkEvents/Player";
 
 
 const globPromise = promisify(glob);

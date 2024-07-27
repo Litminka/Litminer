@@ -1,4 +1,4 @@
-import { BotClient } from "../Structures/BotClient";
+import { BotClient } from "../structures/BotClient";
 
 
 export function NodesEvents(client:BotClient) {

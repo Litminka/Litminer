@@ -1,8 +1,8 @@
 import { Command } from "../../typings/Client";
-import AudioService from "../../Services/AudioService";
+import AudioService from "../../services/AudioService";
 import { SlashCommandBuilder } from "discord.js";
-import { formatMS_HHMMSS } from "../../Utils/Time";
-import BaseEmbeds from "../../Embeds/BaseEmbeds";
+import { formatMS_HHMMSS } from "../../utils/Time";
+import BaseEmbeds from "../../embeds/BaseEmbeds";
 
 export default {
     data: new SlashCommandBuilder()

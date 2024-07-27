@@ -1,11 +1,11 @@
 import { ApplicationCommandOptionType, CommandInteractionOptionResolver, GuildMember, SlashCommandBuilder, VoiceChannel } from "discord.js";
 import { Command } from "../../typings/Client";
-import { formatMS_HHMMSS } from "../../Utils/Time";
+import { formatMS_HHMMSS } from "../../utils/Time";
 import { SearchPlatform, SearchResult, Track } from "lavalink-client";
-import AudioService from "../../Services/AudioService";
-import BaseEmbeds from "../../Embeds/BaseEmbeds";
-import AutocompleteService from "../../Services/AutocompleteService";
-import MusicEmbeds from "../../Embeds/MusicEmbeds";
+import AudioService from "../../services/AudioService";
+import BaseEmbeds from "../../embeds/BaseEmbeds";
+import AutocompleteService from "../../services/AutocompleteService";
+import MusicEmbeds from "../../embeds/MusicEmbeds";
 
 
 

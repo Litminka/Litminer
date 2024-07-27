@@ -1,8 +1,8 @@
 import { CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
-import { formatMS_HHMMSS } from "../../Utils/Time";
+import { formatMS_HHMMSS } from "../../utils/Time";
 import { Command } from "../../typings/Client";
-import AudioService, { SeekOptions } from "../../Services/AudioService";
-import BaseEmbeds from "../../Embeds/BaseEmbeds";
+import AudioService, { SeekOptions } from "../../services/AudioService";
+import BaseEmbeds from "../../embeds/BaseEmbeds";
 
 export default {
     data: new SlashCommandBuilder()

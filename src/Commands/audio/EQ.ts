@@ -1,8 +1,8 @@
 import { CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
 
 import { Command } from "../../typings/Client";
-import AudioService, { EQ } from "../../Services/AudioService";
-import BaseEmbeds from "../../Embeds/BaseEmbeds";
+import AudioService, { EQ } from "../../services/AudioService";
+import BaseEmbeds from "../../embeds/BaseEmbeds";
 
 export default { 
     data: new SlashCommandBuilder()

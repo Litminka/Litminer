@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import BaseEmbeds from "./BaseEmbeds";
-import { BotClient } from "../Structures/BotClient";
+import { BotClient } from "../structures/BotClient";
 
 export default class ClientEmbeds{
 

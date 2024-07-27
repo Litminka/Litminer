@@ -3,7 +3,7 @@ import {
 	SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder,
 	SlashCommandSubcommandsOnlyBuilder
 } from "discord.js";
-import { BotClient } from "../Structures/BotClient";
+import { BotClient } from "../structures/BotClient";
 import { Track, UnresolvedTrack } from "lavalink-client";
 
 export interface ExecuteOptions {

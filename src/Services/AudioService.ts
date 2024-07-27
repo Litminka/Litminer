@@ -2,7 +2,7 @@
 import { ChatInputCommandInteraction, GuildMember, User } from "discord.js";
 import { Player, EQBand, RepeatMode, EQList, PlayOptions, SearchPlatform, SearchQuery, SearchResult, UnresolvedSearchResult } from "lavalink-client";
 import { ExecuteOptions } from "../typings/Client";
-import BaseEmbeds from "../Embeds/BaseEmbeds";
+import BaseEmbeds from "../embeds/BaseEmbeds";
 
 export const EQ = {
     "Clear" : null,

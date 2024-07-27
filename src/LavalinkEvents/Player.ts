@@ -1,7 +1,7 @@
 import {  TextChannel } from "discord.js";
-import { BotClient } from "../Structures/BotClient";
-import MusicEmbeds from "../Embeds/MusicEmbeds";
-import ClientEmbeds from "../Embeds/ClientEmbeds";
+import { BotClient } from "../structures/BotClient";
+import MusicEmbeds from "../embeds/MusicEmbeds";
+import ClientEmbeds from "../embeds/ClientEmbeds";
 
 
 export function PlayerEvents(client:BotClient) {

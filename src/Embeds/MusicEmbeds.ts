@@ -1,6 +1,6 @@
 import { Colors, EmbedBuilder } from "discord.js";
 import { Player, PlaylistInfo, Queue, Track } from "lavalink-client";
-import { formatMS_HHMMSS } from "../Utils/Time";
+import { formatMS_HHMMSS } from "../utils/Time";
 import { CustomRequester, EmbededTrack } from "../typings/Client";
 import BaseEmbeds, { EmbedQueue } from "./BaseEmbeds";
 
