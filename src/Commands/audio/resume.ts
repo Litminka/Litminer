@@ -3,27 +3,23 @@ import AudioService from "../../services/AudioService";
 import { SlashCommandBuilder } from "discord.js";
 import { formatMS_HHMMSS } from "../../utils/Time";
 import BaseEmbeds from "../../embeds/BaseEmbeds";
+import NotPlayingError from "../../errors/playerErrors/NotPlayingError";
 
 export default {
     data: new SlashCommandBuilder()
         .setName("resume").setDescription("Resume track"),
-    execute: async ( {client, interaction} ) => {
-        if (!(await AudioService.validateConnection({client, interaction}))) return;
+    execute: async ({ client, interaction }) => {
+        await AudioService.validateConnection({ client, interaction })
 
         const player = client.lavalink.getPlayer(interaction.guildId);
-        if(!player.queue.current) 
-            return interaction.reply({ 
-                ephemeral: true,
-                embeds: [
-                    BaseEmbeds.Error(`I'm not playing anything`)
-                ] 
-            });
+        if (!player.queue.current) throw new NotPlayingError();
+
         await AudioService.resume(player);
 
         await interaction.reply({
             embeds: [
                 BaseEmbeds.Success(`Track resumed from ${formatMS_HHMMSS(player.position)}`)
-            ] 
+            ]
         });
     }
 } as Command;

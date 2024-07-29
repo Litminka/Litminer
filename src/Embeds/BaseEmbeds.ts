@@ -1,5 +1,5 @@
 import { ColorResolvable, Colors, EmbedBuilder } from "discord.js";
-import { Queue, Track, UnresolvedTrack } from "lavalink-client";
+import { Queue } from "lavalink-client";
 import { EmbededTrack } from "../typings/Client";
 
 export default class BaseEmbeds{

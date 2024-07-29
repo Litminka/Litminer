@@ -1,11 +1,15 @@
 
-import { ChatInputCommandInteraction, GuildMember, User } from "discord.js";
+import { ChatInputCommandInteraction, GuildMember, User, VoiceChannel } from "discord.js";
 import { Player, EQBand, RepeatMode, EQList, PlayOptions, SearchPlatform, SearchQuery, SearchResult, UnresolvedSearchResult } from "lavalink-client";
 import { ExecuteOptions } from "../typings/Client";
 import BaseEmbeds from "../embeds/BaseEmbeds";
+import JoinVCError from "../errors/interactionErrors/JoinVCError";
+import ConnectionError from "../errors/interactionErrors/ConnectionError";
+import NotInVCError from "../errors/playerErrors/NotInVCError";
+import ChannelAccessError from "../errors/interactionErrors/ChannelAccessError";
 
 export const EQ = {
-    "Clear" : null,
+    "Clear": null,
     "Earrape Bassboost": EQList.BassboostEarrape,
     "High Bassboost": EQList.BassboostHigh,
     "Medium Bassboost": EQList.BassboostMedium,
@@ -19,7 +23,7 @@ export const EQ = {
     "Rock": EQList.Rock,
 }
 
-export interface SeekOptions{
+export interface SeekOptions {
     rewind: number | null;
     position: number | null;
 }
@@ -47,7 +51,7 @@ export default class AudioService {
         await player.skip(shouldSkip);
     }
 
-    public static async seek(player: Player, {rewind, position}: SeekOptions) {
+    public static async seek(player: Player, { rewind, position }: SeekOptions) {
         let seekTo = 0;
 
         if (rewind == null && position == null) {
@@ -66,46 +70,26 @@ export default class AudioService {
 
     public static async stop(player: Player) {
         await player.stopPlaying(true, false);
+        await player.destroy();
     }
 
-    public static async search(player: Player, query: SearchQuery, requestUser: User): Promise<SearchResult | UnresolvedSearchResult>{
+    public static async search(player: Player, query: SearchQuery, requestUser: User): Promise<SearchResult | UnresolvedSearchResult> {
         return await player.search(query, requestUser)
     }
 
-    public static async play(player: Player, options?: Partial<PlayOptions>){
+    public static async play(player: Player, options?: Partial<PlayOptions>) {
         await player.play(options);
     }
 
     public static async validateConnection({ client, interaction }: ExecuteOptions): Promise<boolean> {
         if (!interaction.guildId) return;
-        const vcId = (interaction.member as GuildMember)?.voice?.channelId;
         const player = client.lavalink.getPlayer(interaction.guildId);
-        if (!player) {
-            interaction.reply({ 
-                ephemeral: true, 
-                embeds: [
-                    BaseEmbeds.Error(`I'm not connected`)
-                ] 
-            });
-            return false;
-        }
-        if (!vcId) {
-            interaction.reply({ 
-                ephemeral: true,
-                embeds: [
-                    BaseEmbeds.Error(`Join a Voice Channel`)
-                ] 
-             });
-            return false;
-        }
-        if (player.voiceChannelId !== vcId) {
-            interaction.reply({ ephemeral: true, 
-                embeds: [
-                BaseEmbeds.Error(`You need to be in my Voice Channel`)
-                ]
-            })
-            return false;
-        }
+        if (!player) throw new ConnectionError();
+        const vcId = (interaction.member as GuildMember)?.voice?.channelId;
+        if (!vcId) throw new JoinVCError();
+        const vc = (interaction.member as GuildMember)?.voice?.channel as VoiceChannel;
+        if (!vc.joinable || !vc.speakable) throw new ChannelAccessError();
+        if (player.voiceChannelId !== vcId) throw new NotInVCError();
         return true;
     }
 }

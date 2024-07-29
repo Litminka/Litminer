@@ -1,10 +1,15 @@
 import { Colors, EmbedBuilder } from "discord.js";
-import { Player, PlaylistInfo, Queue, Track } from "lavalink-client";
+import { PlaylistInfo, Track } from "lavalink-client";
 import { formatMS_HHMMSS } from "../utils/Time";
 import { CustomRequester, EmbededTrack } from "../typings/Client";
 import BaseEmbeds, { EmbedQueue } from "./BaseEmbeds";
+import QueueEmptyError from "../errors/queueErrors/QueueEmptyError";
 
 export default class MusicEmbeds {
+    static replacements = {
+        '[': '(',
+        ']': ')'
+    }
 
     public static TrackStarted(track: Track): EmbedBuilder{
         const embed = BaseEmbeds.TimestampEmbed(Colors.Blurple, `🎶 ${track.info.title}`.substring(0, 256))
@@ -70,12 +75,14 @@ export default class MusicEmbeds {
 
     public static PrintQueue(queue: EmbedQueue): EmbedBuilder{
         console.log(queue);
+        
         const minIndex = queue.currentIndex >= 5 ? queue.currentIndex - 5 : 0;
         const maxIndex = queue.currentIndex <= queue.tracks.length - 5 ? queue.currentIndex + 5 : queue.tracks.length;
         const printQueue = queue.tracks.slice(minIndex, maxIndex);
+        if (printQueue === undefined) throw new QueueEmptyError();
         const embed = BaseEmbeds.Info("Queue");
         for (let embedTrack of printQueue){
-            const title = embedTrack.track.info.title;
+            const title = embedTrack.track.info.title.replace(/[\[\]]/g, c => this.replacements[c]);
             const trackAuthor = embedTrack.track.info.author;
             let trackTitle = `\`\`\`\n ${title} \`\`\``;
             if (embedTrack.isCurrent) trackTitle = `\`\`\`css\n [${title}] \`\`\``;

@@ -7,9 +7,9 @@ import {
     ComponentType,
     SlashCommandBuilder,
 } from "discord.js";
-import { formatMS_HHMMSS } from "../../utils/Time";
-import BaseEmbeds, { EmbedQueue } from "../../embeds/BaseEmbeds";
+import { EmbedQueue } from "../../embeds/BaseEmbeds";
 import MusicEmbeds from "../../embeds/MusicEmbeds";
+import QueueEmptyError from "../../errors/queueErrors/QueueEmptyError";
 
 export default {
     data: new SlashCommandBuilder()
@@ -19,15 +19,12 @@ export default {
             ru: "Текущая очередь",
         }),
     execute: async ({ client, interaction }) => {
-        if (!(await AudioService.validateConnection({ client, interaction })))
-            return;
+        await AudioService.validateConnection({ client, interaction })
 
         const player = client.lavalink.getPlayer(interaction.guildId);
-        if (!player.queue)
-            return interaction.reply({
-                ephemeral: true,
-                embeds: [BaseEmbeds.Error(`Queue is empty`)],
-            });
+        const trackQueue = new EmbedQueue(player.queue);
+        console.log(trackQueue);
+        if (!trackQueue.tracks[0].track) throw new QueueEmptyError();
 
         const prev = new ButtonBuilder()
             .setCustomId("previous")
@@ -42,10 +39,12 @@ export default {
             .setLabel("Next")
             .setEmoji(`➡️`);
 
-        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(prev, next);
-    
-        const trackQueue = new EmbedQueue(player.queue);
+        
+        if (trackQueue.currentIndex > trackQueue.tracks.length - 5) {
+            next.setDisabled(true);
+        }
 
+        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(prev, next);
         const response = await interaction.reply({
             embeds: [MusicEmbeds.PrintQueue(trackQueue)],
             components: [row],
@@ -65,7 +64,7 @@ export default {
                 previous: -5,
                 next: 5,
             }
-            
+
             const shift: number = shifts[selection];
             trackQueue.ShiftBy(shift);
             const [prevButton, nextButton] = row.components;
@@ -73,7 +72,7 @@ export default {
             nextButton.setDisabled(false);
             prevButton.setDisabled(false);
 
-            if (trackQueue.currentIndex < 5){
+            if (trackQueue.currentIndex < 5) {
                 prevButton.setDisabled(true);
             }
 

@@ -1,7 +1,7 @@
 import { Client, GatewayIntentBits, IntentsBitField } from "discord.js";
 import { promisify } from "util";
 import glob from "glob";
-import { LavalinkManager, MiniMap } from "lavalink-client";
+import { LavalinkManager, MiniMap, Player } from "lavalink-client";
 import { Command, SubCommand, Event } from "../typings/Client";
 import { RedisClientType, createClient } from "redis";
 import { autoPlayFunction, requesterTransformer } from "../utils/OptionalFunctions";
@@ -103,12 +103,16 @@ export class BotClient extends Client {
     }
 
     public async Disconnect(){
+        console.log(`destroying players`);
+        this.lavalink.players.forEach( async (player) =>{
+            await player.destroy();
+        })
         console.log(`disconnecting lavalink`);
         await this.lavalink.nodeManager.disconnectAll();
         console.log(`disconnecting redis`);
         await this.redis.quit();
         console.log(`disconnecting bot`);
-        //await this.destroy();
+        await this.destroy();
     }
 
     private async ImportFile(path: string) {

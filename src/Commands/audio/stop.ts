@@ -1,4 +1,3 @@
-
 import { SlashCommandBuilder } from "discord.js";
 import { Command } from "../../typings/Client";
 import AudioService from "../../services/AudioService";
@@ -10,18 +9,16 @@ export default {
         .setDescription("Stop music")
         .setDescriptionLocalization("ru", "Выключить музыку"),
 
-    execute: async( { client, interaction } ) => {
-        if (!(await AudioService.validateConnection({client, interaction}))) return;
+    execute: async ({ client, interaction }) => {
+        await AudioService.validateConnection({ client, interaction })
         const player = client.lavalink.getPlayer(interaction.guildId);
-        
-        // example to apply a filter!
+
         await AudioService.stop(player);
 
-        // and it is good again!
-        await interaction.reply({ 
+        await interaction.reply({
             embeds: [
                 BaseEmbeds.Success(`Stopped the player`)
-            ] 
+            ]
         });
     }
 } as Command;
