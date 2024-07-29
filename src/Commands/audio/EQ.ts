@@ -1,9 +1,9 @@
-import { CommandInteractionOptionResolver, GuildMember, SlashCommandBuilder } from "discord.js";
-import { EQList } from "lavalink-client";
+import { CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
 import { Command } from "../../typings/Client";
-import AudioService, { EQ } from "../../Services/AudioService";
+import AudioService, { EQ } from "../../services/AudioService";
+import BaseEmbeds from "../../embeds/BaseEmbeds";
 
-export default { 
+export default {
     data: new SlashCommandBuilder()
         .setName("equalizers")
         .setDescription("Apply a specific Equalizer")
@@ -16,27 +16,24 @@ export default {
             { name: "Better Music", value: "Better Music" }, // available in lavalink-filters lavalink-plugin
             { name: "Rock", value: "Rock" },
             { name: "Classic", value: "Classic" },
-            { name: "Electronic", value: "Electronic"},
-            { name: "Gaming", value: "Gaming"},
-            { name: "Pop", value: "Pop"},
-            { name: "Full sound", value: "Full sound"}
+            { name: "Electronic", value: "Electronic" },
+            { name: "Gaming", value: "Gaming" },
+            { name: "Pop", value: "Pop" },
+            { name: "Full sound", value: "Full sound" }
         )),
-    execute: async ({client, interaction}) => {
-        if (!(await AudioService.validateConnection({client, interaction}))) return;
-        
+    execute: async ({ client, interaction }) => {
+        await AudioService.validateConnection({ client, interaction });
+
         const player = client.lavalink.getPlayer(interaction.guildId);
         const eqOption = (interaction.options as CommandInteractionOptionResolver).getString("equalizer");
 
-        let response = `Applied the ${eqOption} Equalizer`; 
-        
-        if (EQ[eqOption] == null){
-           await AudioService.clearEQ(player);
-        } else{
-           await AudioService.setEQ(player, EQ[eqOption]);
-        }
-        
+        await AudioService.setEQ(player, EQ[eqOption]);
+
         await interaction.reply({
-            content: `✅ ${response}`
+            ephemeral: true,
+            embeds: [
+                BaseEmbeds.Success(`Applied the ${eqOption} Equalizer`)
+            ]
         })
     }
 

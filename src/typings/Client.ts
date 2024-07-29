@@ -3,7 +3,8 @@ import {
 	SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder,
 	SlashCommandSubcommandsOnlyBuilder
 } from "discord.js";
-import { BotClient } from "../Structures/BotClient";
+import { BotClient } from "../structures/BotClient";
+import { Track, UnresolvedTrack } from "lavalink-client";
 
 export interface ExecuteOptions {
     client: BotClient;
@@ -43,3 +44,8 @@ export interface Event {
     execute: (client:BotClient, ...params:any) => any;
 }
 
+export interface EmbededTrack{
+    track: Track | UnresolvedTrack,
+    isCurrent: boolean,
+    position: number
+}

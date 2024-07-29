@@ -1,7 +1,7 @@
-
-import { GuildMember, SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import { Command } from "../../typings/Client";
-import AudioService from "../../Services/AudioService";
+import AudioService from "../../services/AudioService";
+import BaseEmbeds from "../../embeds/BaseEmbeds";
 
 export default {
     data: new SlashCommandBuilder()
@@ -9,14 +9,16 @@ export default {
         .setDescription("Stop music")
         .setDescriptionLocalization("ru", "Выключить музыку"),
 
-    execute: async( { client, interaction } ) => {
-        if (!(await AudioService.validateConnection({client, interaction}))) return;
+    execute: async ({ client, interaction }) => {
+        await AudioService.validateConnection({ client, interaction })
         const player = client.lavalink.getPlayer(interaction.guildId);
-        
-        // example to apply a filter!
-        await AudioService.stop(player, `${interaction.user.username} stopped the Player`);
 
-        // and it is good again!
-        interaction.reply({ content: "Stopped the player" });
+        await AudioService.stop(player);
+
+        await interaction.reply({
+            embeds: [
+                BaseEmbeds.Success(`Stopped the player`)
+            ]
+        });
     }
 } as Command;

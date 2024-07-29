@@ -1,15 +1,14 @@
-import { ApplicationCommandDataResolvable, Client, ClientEvents, Collection, GatewayIntentBits, Guild } from "discord.js";
+import { Client, GatewayIntentBits, IntentsBitField } from "discord.js";
 import { promisify } from "util";
 import glob from "glob";
-import { LavalinkManager, MiniMap } from "lavalink-client";
+import { LavalinkManager, MiniMap, Player } from "lavalink-client";
 import { Command, SubCommand, Event } from "../typings/Client";
 import { RedisClientType, createClient } from "redis";
-import { autoPlayFunction, requesterTransformer } from "../Utils/OptionalFunctions";
-import { myCustomStore, myCustomWatcher } from "../Utils/CustomClasses";
-import { join } from "path";
-import { readdirSync } from "fs";
-import { NodesEvents } from "../LavalinkEvents/Nodes";
-import { PlayerEvents } from "../LavalinkEvents/Player";
+import { autoPlayFunction, requesterTransformer } from "../utils/OptionalFunctions";
+import { myCustomStore, myCustomWatcher } from "../utils/CustomClasses";
+
+import { NodesEvents } from "../lavalinkEvents/Nodes";
+import { PlayerEvents } from "../lavalinkEvents/Player";
 
 
 const globPromise = promisify(glob);
@@ -17,7 +16,7 @@ const globPromise = promisify(glob);
 export class BotClient extends Client {
     lavalink: LavalinkManager;
     commands: MiniMap<string, Command | SubCommand>;
-    redis: RedisClientType | MiniMap<string, string>;
+    redis: RedisClientType;
     defaultVolume: number;
 
     constructor() {
@@ -40,11 +39,9 @@ export class BotClient extends Client {
             }
         });
         this.redis.connect();
-        this.redis.on("error", (err) => console.log('Redis Client Error', err));
+        //this.redis.on("error", (err) => console.log('Redis Client Error', err));
 
         this.LoadLavalink();
-
-        //this.guilds.cache.clear();
 
         this.RegisterModules();
 
@@ -76,14 +73,14 @@ export class BotClient extends Client {
                 volumeDecrementer: 0.75, // on client 100% == on lavalink 75%
                 requesterTransformer: requesterTransformer,
                 onDisconnect: {
-                    autoReconnect: true, // automatically attempts a reconnect, if the bot disconnects from the voice channel, if it fails, it get's destroyed
+                    autoReconnect: false, // automatically attempts a reconnect, if the bot disconnects from the voice channel, if it fails, it get's destroyed
                     destroyPlayer: true // overrides autoReconnect and directly destroys the player if the bot disconnects from the vc
                 },
                 onEmptyQueue: {
                     destroyAfterMs: 1000, // 0 === instantly destroy | don't provide the option, to don't destroy the player
                     autoPlayFunction: autoPlayFunction,
                 },
-                useUnresolvedData: true
+                useUnresolvedData: false
             },
             queueOptions: {
                 maxPreviousTracks: 10,
@@ -103,6 +100,19 @@ export class BotClient extends Client {
             }
         });
         //console.log("lavalink connected");
+    }
+
+    public async Disconnect(){
+        console.log(`destroying players`);
+        this.lavalink.players.forEach( async (player) =>{
+            await player.destroy();
+        })
+        console.log(`disconnecting lavalink`);
+        await this.lavalink.nodeManager.disconnectAll();
+        console.log(`disconnecting redis`);
+        await this.redis.quit();
+        console.log(`disconnecting bot`);
+        await this.destroy();
     }
 
     private async ImportFile(path: string) {

@@ -1,4 +1,4 @@
-import { BotClient } from "../Structures/BotClient";
+import { BotClient } from "../structures/BotClient";
 
 
 export function NodesEvents(client:BotClient) {
@@ -6,7 +6,7 @@ export function NodesEvents(client:BotClient) {
          * NODE EVENTS
          */
     client.lavalink.nodeManager.on("raw", (node, payload) => {
-        //console.log(node.id, " :: RAW :: ", payload);
+        console.log(node.id, " :: RAW :: ", payload);
     }).on("disconnect", (node, reason) => {
         console.log(node.id, " :: DISCONNECT :: ", reason);
     }).on("connect", (node) => {

@@ -1,6 +1,6 @@
 import { MiniMap, QueueChangesWatcher, QueueStoreManager, StoredQueue } from "lavalink-client";
 import { RedisClientType } from "redis";
-import { BotClient } from "../Structures/BotClient";
+import { BotClient } from "../structures/BotClient";
 
 
 
