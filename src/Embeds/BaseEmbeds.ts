@@ -28,6 +28,12 @@ export default class BaseEmbeds{
     public static Info(message: string): EmbedBuilder{
         return BaseEmbeds.TimestampEmbed(Colors.Aqua, `❗ ${message}`); 
     }
+
+    public static Audio(message: string): EmbedBuilder{
+        return BaseEmbeds.TimestampEmbed(Colors.Blurple, `🎶 ${message}`);
+    }
+
+    
 }
 
 export class EmbedQueue {

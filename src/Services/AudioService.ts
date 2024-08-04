@@ -92,4 +92,14 @@ export default class AudioService {
         if (player.voiceChannelId !== vcId) throw new NotInVCError();
         return true;
     }
+
+    public static sliderGenerator(pos: number, maxPos: number, width?: number) {
+        let slider = '';
+        const radioButtonPos = Math.floor(pos * 30 / maxPos);
+        for (let i = 0; i < 30; i++) {
+            if (radioButtonPos === i) slider += '🔘';
+            else slider += '▬';
+        }
+        return slider;
+    }
 }
