@@ -12,3 +12,9 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model UserLink {
+  id                 Int                   @id @default(autoincrement())
+  discordId          String                @unique
+  litminkaId         String                @unique
+}
