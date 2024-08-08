@@ -5,7 +5,6 @@ import { Command, SubCommand, Event } from "../typings/Client";
 import {
     ChatInputCommandInteraction, CommandInteractionOptionResolver, Events, Interaction
 } from "discord.js";
-
 export default {
     name: Events.InteractionCreate,
     execute: async (client, interaction: Interaction) => {
