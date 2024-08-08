@@ -107,16 +107,12 @@ export default class MusicEmbeds {
             .setImage(track.info.artworkUrl)
             .addFields([
             {
-                name: `\u200B`,
-                value: `\`\`\`css\n${AudioService.sliderGenerator(position, duration)}\`\`\`\n`
-            },
-            {
-                name: `*Requester*`,
+                name: `**Requester**`,
                 value: `<@${(track.requester as CustomRequester).id}>`,
                 inline: true
             },
             {
-                name: `*Progress*`,
+                name: `**Progress**`,
                 value: `${formatMS_HHMMSS(position)} / ${formatMS_HHMMSS(duration)}`,
                 inline: true
             }

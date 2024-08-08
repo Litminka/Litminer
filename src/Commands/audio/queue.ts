@@ -39,7 +39,7 @@ export default {
             .setLabel("Next")
             .setEmoji(`➡️`);
 
-        
+
         if (trackQueue.currentIndex > trackQueue.tracks.length - 5) {
             next.setDisabled(true);
         }
@@ -91,11 +91,11 @@ export default {
             });
         });
 
-        collector.on("end", (async) => {
+        collector.on("end", async () => {
             row.components.forEach((button) => {
                 button.setDisabled(true);
             });
-            response.edit({
+            await response.edit({
                 components: [row],
             });
         });

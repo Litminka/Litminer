@@ -80,8 +80,8 @@ export default {
             ]
         });
         // #endregion
-        //const playOptions = player.connected ? { volume: client.defaultVolume, paused: false } : undefined
-        if (!player.playing) await AudioService.play(player, { volume: client.defaultVolume, paused: false });
+        const playOptions = player.connected ? { volume: client.defaultVolume, paused: false } : undefined
+        if (!player.playing) await AudioService.play(player, playOptions);
     },
     autocomplete: async ({ client, interaction }) => {
         // #region Validation
