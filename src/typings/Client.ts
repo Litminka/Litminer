@@ -1,7 +1,7 @@
 import {
-	AutocompleteInteraction, ChatInputCommandInteraction, Client, SlashCommandBuilder,
-	SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder,
-	SlashCommandSubcommandsOnlyBuilder
+    AutocompleteInteraction, ChatInputCommandInteraction, SlashCommandBuilder,
+    SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder,
+    SlashCommandSubcommandsOnlyBuilder
 } from "discord.js";
 import { BotClient } from "../structures/BotClient";
 import { Track, UnresolvedTrack } from "lavalink-client";
@@ -16,7 +16,7 @@ interface AutocompleteOptions {
     interaction: AutocompleteInteraction;
 }
 
-type ExecuteFunction = (options: ExecuteOptions) => any; 
+type ExecuteFunction = (options: ExecuteOptions) => any;
 type AutocompleteFunction = (options: AutocompleteOptions) => any;
 
 export interface Command {
@@ -31,8 +31,8 @@ export interface CustomRequester {
     avatar?: string,
 }
 
-type subCommandExecute = { [subCommandName:string]: ExecuteFunction };
-type subCommandAutocomplete = { [subCommandName:string]: AutocompleteFunction };
+type subCommandExecute = { [subCommandName: string]: ExecuteFunction };
+type subCommandAutocomplete = { [subCommandName: string]: AutocompleteFunction };
 export interface SubCommand {
     data: SlashCommandSubcommandBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandsOnlyBuilder;
     execute: subCommandExecute;
@@ -41,11 +41,38 @@ export interface SubCommand {
 
 export interface Event {
     name: string,
-    execute: (client:BotClient, ...params:any) => any;
+    execute: (client: BotClient, ...params: any) => any;
 }
 
-export interface EmbededTrack{
+export interface EmbededTrack {
     track: Track | UnresolvedTrack,
     isCurrent: boolean,
     position: number
+}
+
+export enum CustomEvents {
+    Announcement = "announcement",
+}
+
+export interface AnimeAnnouncement {
+    animeName: string,
+    groupType?: GroupType, 
+    groupName?: string,
+    episode: number,
+    maxEpisodes: number,
+    notificationType: NotifyStatuses,
+    slug: string,
+    image: string,
+    userIds: number[]
+}
+
+export enum NotifyStatuses {
+    AnimeRelease = 'anime_released',
+    EpisodeRelease = 'episode_released',
+    FinalEpisodeReleased = 'final_episode_released'
+}
+
+export enum GroupType{
+    Voice = "voice",
+    Subtitles = "subtitles"
 }
