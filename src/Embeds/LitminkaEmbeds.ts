@@ -19,10 +19,9 @@ export default class LitminkaEmbeds {
     public static AnimeRelease(announcement: AnimeAnnouncement): EmbedBuilder{
         const animeURL = `https://litminka.ru/anime/${announcement.slug}`;
         const embed = BaseEmbeds.Info(`Аниме начало выходить!`)
-        .setDescription(`**${announcement.animeName}**\n - [Litminka.ru](${animeURL})`)
-        .setImage(announcement.image)
-        .setURL(animeURL)
-        
+        .setDescription(`**${announcement.animeName}**\n - [Litminka.ru](${animeURL})`);
+        if (/^https?:\/\//.test(announcement.image)) embed.setImage(announcement.image);
+        if (/^https?:\/\//.test(animeURL)) embed.setURL(animeURL);
         return embed;
     }
     

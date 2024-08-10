@@ -13,8 +13,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model UserLink {
+model User {
   id                 Int                   @id @default(autoincrement())
   discordId          String                @unique
   litminkaId         String                @unique
+  username           String
+  isNotifiable       Boolean               @default(false)
+}
+
+model Guild {
+  id                 Int                   @id @default(autoincrement())
+  guildId            String                @unique
+  isNotifiable       Boolean               @default(false)
+  notifyChannelId    String?                    
+
 }

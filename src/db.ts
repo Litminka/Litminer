@@ -1,9 +1,11 @@
 import { PrismaClient } from '@prisma/client';
-import { UserLinkExt } from './models/UserLink';
+import { UserExt } from './models/User';
+import { GuildExt } from './models/Guild';
 
 const prismaClientSingleton = () => {
     return new PrismaClient()
-        .$extends(UserLinkExt)
+        .$extends(UserExt)
+        .$extends(GuildExt)
 };
 
 declare global {
