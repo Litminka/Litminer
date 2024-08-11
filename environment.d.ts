@@ -2,6 +2,7 @@ declare global {
     namespace NodeJS {
         interface ProcessEnv {
             NODE_ENV: 'dev' | 'prod';
+            DEV: boolean;
             DISCORD_BOT_LOGIN: string;
             DISCORD_BOT_PASSWORD: string;
             DISCORD_BOT_TOKEN: string;
@@ -14,6 +15,7 @@ declare global {
             REDIS_PORT: string;
             YOUTUBE_COOKIE: string;
             YOUTUBE_ID_TOKEN: string;
+            DEBUG: boolean;
         }
     }
 }
