@@ -5,6 +5,7 @@ import { delay } from "../../utils/Time";
 import MusicEmbeds from "../../embeds/MusicEmbeds";
 import NotPlayingError from "../../errors/playerErrors/NotPlayingError";
 import BaseButtons from "../../embeds/buttons/BaseButons";
+import { LitminerDebug } from "../../utils/LitminerDebug";
 
 export default {
     data: new SlashCommandBuilder()
@@ -40,14 +41,14 @@ export default {
         collector.on("collect", async (button) => {
             button.deferUpdate();
             const selection = button.customId;
-            console.log(`${selection} pressed`);
+            LitminerDebug.Debug(`${selection} pressed`);
             let [lskip_component, pause_component, rskip_component] = row.components;
 
             const commands = {
                 "lskip": async () => await AudioService.seek(player, { rewind: -5, position: null } as SeekOptions),
                 "rskip": async () => await AudioService.seek(player, { rewind: 5, position: null } as SeekOptions),
                 "pause": async () => {
-                    console.log(`In pause`)
+                    LitminerDebug.Debug(`In pause`)
                     await AudioService.pause(player);
                     pause_component
                         .setCustomId("unpause")
@@ -55,7 +56,7 @@ export default {
                         .setLabel("Resume");
                 },
                 "unpause": async () => {
-                    console.log(`In resume`)
+                    LitminerDebug.Debug(`In resume`)
                     await AudioService.resume(player);
                     pause_component
                         .setCustomId("pause")

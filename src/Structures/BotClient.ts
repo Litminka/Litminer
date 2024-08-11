@@ -9,6 +9,7 @@ import { myCustomStore, myCustomWatcher } from "../utils/CustomClasses";
 
 import { NodesEvents } from "../lavalinkEvents/Nodes";
 import { PlayerEvents } from "../lavalinkEvents/Player";
+import { LitminerDebug } from "../utils/LitminerDebug";
 
 
 const globPromise = promisify(glob);
@@ -99,19 +100,18 @@ export class BotClient extends Client {
                 }
             }
         });
-        //console.log("lavalink connected");
     }
 
     public async Disconnect(){
-        console.log(`destroying players`);
+        LitminerDebug.Special(`Destroying players`);
         this.lavalink.players.forEach( async (player) =>{
             await player.destroy();
         })
-        console.log(`disconnecting lavalink`);
+        LitminerDebug.Special(`Disconnecting lavalink`);
         await this.lavalink.nodeManager.disconnectAll();
-        console.log(`disconnecting redis`);
+        LitminerDebug.Special(`Disconnecting redis`);
         await this.redis.quit();
-        console.log(`disconnecting bot`);
+        LitminerDebug.Special(`Disconnecting bot`);
         await this.destroy();
     }
 
@@ -132,10 +132,10 @@ export class BotClient extends Client {
             const command = await this.ImportFile(FilePath) as Command;
             
             if (!command.data || !command.execute) { 
-                console.warn(`[WARNING] The Command ${command} is missing a required "data" or "execute" property.`)
+                LitminerDebug.Warning(`The Command ${command} is missing a required "data" or "execute" property.`)
                 return;
             }
-            console.log(`Loaded command ${command.data.name}`);
+            LitminerDebug.Info(`Loaded command ${command.data.name}`);
 
             this.commands.set(command.data.name, command);
         });
@@ -152,10 +152,10 @@ export class BotClient extends Client {
         EventFiles.forEach(async (FilePath) => {
             const event: Event = await this.ImportFile(FilePath) as Event;
             if (!event.name || !event.execute) {
-                console.warn(`[WARNING] The Event ${event} is missing a required "name" or "execute" property.`)
+                LitminerDebug.Warning(`The Event ${event} is missing a required "name" or "execute" property.`)
                 return;
             }
-            console.log(`Loaded event ${event.name}`);
+            LitminerDebug.Info(`Loaded event ${event.name}`);
 
             this.on(event.name, event.execute.bind(null, this));
         });

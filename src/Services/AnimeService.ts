@@ -10,13 +10,14 @@ import prisma from "../db";
 import { client } from "../app";
 import BaseError from "../errors/BaseError";
 import LitminkaEmbeds from "../embeds/LitminkaEmbeds";
+import { LitminerDebug } from "../utils/LitminerDebug";
 
 
 
 export default class AnimeService {
     public static async NotifyGuilds(announcement: AnimeAnnouncement){
         const guilds = await prisma.guild.getNotifiable();
-        if (guilds.length == 0) console.log(`[LitminerV2] No guilds to notify`);
+        if (guilds.length == 0) LitminerDebug.Warning(`No guilds to notify`);
         for (const guild of guilds) {
             try {
                 const channel = client.channels.cache.get(guild.notifyChannelId) as TextChannel;
@@ -27,16 +28,16 @@ export default class AnimeService {
                         await AnimeService.getAnnouncementEmbed(announcement)
                     ]
                 });
-                console.log(`[LitminerV2] ${channel.guild.name} was notified`);
+                LitminerDebug.Success(`${channel.guild.name} was notified`);
             } catch (err) {
-                console.log(`[LitminerV2] ${err}`)
+                LitminerDebug.Error(`${err}`)
             }
         }
     }
 
     public static async NotifyUsers(announcement: AnimeAnnouncement){
         const users = await prisma.user.findNotifiable(announcement.userIds);
-        if (users.length == 0) console.log(`[LitminerV2] No users to notify`);
+        if (users.length == 0) LitminerDebug.Warning(`No users to notify`);
         for (const user of users) {
             const discordUser = await client.users.fetch(user.discordId);
             const channel = await discordUser.createDM();
@@ -46,7 +47,7 @@ export default class AnimeService {
                     AnimeService.getAnnouncementEmbed(announcement)
                 ]
             });
-            console.log(`[LitminerV2] ${user.username} was notified`)
+            LitminerDebug.Success(`${user.username} was notified`)
         }
     }
 

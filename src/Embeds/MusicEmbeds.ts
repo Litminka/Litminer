@@ -57,7 +57,6 @@ export default class MusicEmbeds {
     }
 
     public static PlaylistAdded(playlist: PlaylistInfo, tracks: Track[], lastQueuePosition: number): EmbedBuilder {
-        console.log(playlist);
         const embed = BaseEmbeds.Success(`Added ${playlist.title} playlist`)
             .setDescription(
                 [
@@ -75,8 +74,6 @@ export default class MusicEmbeds {
     }
 
     public static PrintQueue(queue: EmbedQueue): EmbedBuilder {
-        //console.log(queue);
-
         const minIndex = queue.currentIndex >= 5 ? queue.currentIndex - 5 : 0;
         const maxIndex = queue.currentIndex <= queue.tracks.length - 5 ? queue.currentIndex + 5 : queue.tracks.length;
         const printQueue = queue.tracks.slice(minIndex, maxIndex);

@@ -10,6 +10,7 @@ import {
 import { EmbedQueue } from "../../embeds/BaseEmbeds";
 import MusicEmbeds from "../../embeds/MusicEmbeds";
 import QueueEmptyError from "../../errors/queueErrors/QueueEmptyError";
+import { LitminerDebug } from "../../utils/LitminerDebug";
 
 export default {
     data: new SlashCommandBuilder()
@@ -23,7 +24,6 @@ export default {
 
         const player = client.lavalink.getPlayer(interaction.guildId);
         const trackQueue = new EmbedQueue(player.queue);
-        console.log(trackQueue);
         if (!trackQueue.tracks[0].track) throw new QueueEmptyError();
 
         const prev = new ButtonBuilder()
@@ -58,7 +58,7 @@ export default {
         collector.on("collect", async (button) => {
             button.deferUpdate();
             const selection = button.customId;
-            console.log(`${selection} pressed`);
+            LitminerDebug.Debug(`${selection} pressed`);
 
             const shifts = {
                 previous: -5,

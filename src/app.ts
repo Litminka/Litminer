@@ -4,6 +4,7 @@ import { BotClient } from "./structures/BotClient";
 import express, { Express, Request, Response } from 'express';
 import { CustomEvents } from "./typings/Client";
 import bodyParser from "body-parser";
+import { LitminerDebug } from "./utils/LitminerDebug";
 
 export const app: Express = express();
 const port = 3000;
@@ -14,14 +15,14 @@ app.post('/', (req: Request, res: Response) => {
 })
 
 app.listen(port, () => {
-    console.log(`[LitminerV2] Listening on ${port}`);
+    LitminerDebug.Special(`Listening on ${port}`);
 })
 
 login();
 export const client = new BotClient();
 
 process.on("SIGINT", async ()=>{
-    console.log(`[LitminerV2] Process stopped`);
+    LitminerDebug.Special(`Process stopped`);
     await client.Disconnect();
     process.exit(process.exitCode || 0);
 })

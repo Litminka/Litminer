@@ -1,5 +1,6 @@
 import axios, { AxiosError } from "axios";
 import BaseError from "./errors/BaseError";
+import { LitminerDebug } from "./utils/LitminerDebug";
 
 enum UnauthorizedTypes {
     Unauthorized = 'unauthorized',
@@ -24,6 +25,7 @@ const api = axios.create({ baseURL: 'https://api.litminka.ru/' });
 
 api.interceptors.request.use(
     function (config) {
+        LitminerDebug.Special(`[REQUEST] ${JSON.stringify(config.data, null, ` `)}`);
         const token = process.env.LITMINKA_TOKEN;
 
         if (!token) return config;
@@ -41,6 +43,7 @@ api.interceptors.request.use(
         }
 
         if (config.data?.userId) {
+            config.params = config.params ?? {};
             config.params.userId = config.data.userId;
             delete config.data.userId;
         }
@@ -49,19 +52,21 @@ api.interceptors.request.use(
     },
     function (error) {
         // Do something with request error
+        LitminerDebug.Error(`[REQUEST] ${JSON.stringify(error, null, ` `)}`);
         return Promise.reject(error);
     },
 );
 
 api.interceptors.response.use(
     function (response) {
+        LitminerDebug.Special(`[RESPONSE] ${JSON.stringify(response.data, null, ` `)}`);
         return response;
     },
     async function (error: AxiosError) {
         const response = error.response;
         const status = error.response?.status;
         const config = error.response?.config;
-
+        LitminerDebug.Error(`[RESPONSE] ${JSON.stringify(error, null, ` `)}`);
         if (status === 422) return response; // maybe throw a validation error?
 
         if (status === 403) throw new BaseError("[403]: Forbidden");
@@ -94,7 +99,7 @@ api.interceptors.response.use(
 );
 
 export async function login() {
-    console.log(`Logging in to [Litminka-API]`);
+    LitminerDebug.Special(`Logging in [Litminka-API]`);
     const res = await api.post('users/login', {
         login: process.env.DISCORD_BOT_LOGIN,
         password: process.env.DISCORD_BOT_PASSWORD,
