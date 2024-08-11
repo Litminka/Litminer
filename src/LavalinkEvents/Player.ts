@@ -43,9 +43,9 @@ export function PlayerEvents(client:BotClient) {
     }).on("trackEnd", (player, track, payload) => {
         LitminerDebug.Success(`${player.guildId} Finished playing ${track.info.title}`)
     }).on("trackError", (player, track, payload) => {
-        LitminerDebug.Error(`${player.guildId} Errored while Playing ${track?.info?.title}, Data - ${payload}`)
+        LitminerDebug.Error(`${player.guildId} Errored while Playing ${track?.info?.title}, Data - ${JSON.stringify(payload)}`)
     }).on("trackStuck", (player, track, payload) => {
-        LitminerDebug.Warning(`${player.guildId} Got Stuck while Playing ${track?.info?.title}, Data - ${payload}`)
+        LitminerDebug.Warning(`${player.guildId} Got Stuck while Playing ${track?.info?.title}, Data - ${JSON.stringify(payload)}`)
         
     }).on("queueEnd", (player, track, payload) => {
         LitminerDebug.Warning(`${player.guildId} No more tracks in the queue, after playing ${track?.info?.title || track}`)

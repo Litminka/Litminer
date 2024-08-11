@@ -9,7 +9,7 @@ export function NodesEvents(client:BotClient) {
     client.lavalink.nodeManager.on("raw", (node, payload) => {
         //LitminerDebug.Debug(node.id, " :: RAW :: ", payload);
     }).on("disconnect", (node, reason) => {
-        LitminerDebug.Success(`${node.id} Disconnected ${reason}`);
+        LitminerDebug.Success(`${node.id} Disconnected ${JSON.stringify(reason)}`);
     }).on("connect", (node) => {
         LitminerDebug.Success(`${node.id} Connected`);
         // testPlay(client); // TEST THE MUSIC ONCE CONNECTED TO THE BOT
@@ -20,9 +20,9 @@ export function NodesEvents(client:BotClient) {
     }).on("destroy", (node) => {
         LitminerDebug.Success(`${node.id} Destroyed`);
     }).on("error", (node, error, payload) => {
-        LitminerDebug.Error(`${node.id} [${error}], Payload - ${payload}`);
+        LitminerDebug.Error(`${node.id} [${error}], Payload - ${JSON.stringify(payload)}`);
     }).on("resumed", (node, payload, players) => {{
-        LitminerDebug.Success(`${node.id} Resumed ${players.length} players still playing, Payload - ${payload}`);
+        LitminerDebug.Success(`${node.id} Resumed ${players.length} players still playing, Payload - ${JSON.stringify(payload)}`);
         LitminerDebug.Debug(`${players}`);
     }});
 }
