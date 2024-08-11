@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import prisma from "../db";
 
 const extention = Prisma.defineExtension({
@@ -35,6 +35,18 @@ const extention = Prisma.defineExtension({
                 return await prisma.user.findFirst({
                     where: {
                         discordId
+                    }
+                });
+            },
+
+            async updateSettings(user: User){
+                const {id, isNotifiable} = user;
+                return await prisma.user.update({
+                    where: {
+                        id
+                    },
+                    data:{
+                        isNotifiable
                     }
                 });
             }

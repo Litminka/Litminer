@@ -17,13 +17,14 @@ model User {
   id                 Int                   @id @default(autoincrement())
   discordId          String                @unique
   litminkaId         String                @unique
-  username           String
+  username           String                @default("")
   isNotifiable       Boolean               @default(false)
 }
 
 model Guild {
   id                 Int                   @id @default(autoincrement())
   guildId            String                @unique
+  name               String                @default("")
   isNotifiable       Boolean               @default(false)
   notifyChannelId    String?                    
 
