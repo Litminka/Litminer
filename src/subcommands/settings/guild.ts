@@ -34,7 +34,7 @@ export async function SettingsGuildSubcommand({client, interaction}: ExecuteOpti
         embeds: [
             await LitminkaEmbeds.GuildProfile(guildSettings)
         ],
-        components: [row, channelsRow]
+        components: [channelsRow, row]
     })
 
     const channelCollector = response.createMessageComponentCollector({
@@ -59,7 +59,7 @@ export async function SettingsGuildSubcommand({client, interaction}: ExecuteOpti
 
         return await response.edit({
             embeds: [await LitminkaEmbeds.GuildProfile(guildSettings)],
-            components: [row, channelsRow]
+            components: [channelsRow, row]
         });
     });
 
@@ -68,7 +68,7 @@ export async function SettingsGuildSubcommand({client, interaction}: ExecuteOpti
             channel.setDisabled(true);
         });
         await response.edit({
-            components: [row, channelsRow],
+            components: [channelsRow, row],
         });
     });
 
@@ -98,7 +98,7 @@ export async function SettingsGuildSubcommand({client, interaction}: ExecuteOpti
 
         return await response.edit({
             embeds: [await LitminkaEmbeds.GuildProfile(guildSettings)],
-            components: [row, channelsRow]
+            components: [channelsRow, row]
         });
     });
 
@@ -107,7 +107,7 @@ export async function SettingsGuildSubcommand({client, interaction}: ExecuteOpti
             button.setDisabled(true);
         });
         await response.edit({
-            components: [row, channelsRow],
+            components: [channelsRow, row],
         });
     });
 }
