@@ -1,5 +1,6 @@
-import { AnimeAnnouncement, CustomEvents, Event } from "../typings/Client";
+import { CustomEvents, Event } from "../typings/Client";
 import AnimeService from "../services/AnimeService";
+import { AnimeAnnouncement } from "../typings/Anime";
 
 export default {
     name: CustomEvents.Announcement,

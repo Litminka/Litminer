@@ -1,11 +1,5 @@
-import { ChatInputCommandInteraction, EmbedBuilder, GuildMember, TextChannel, User, VoiceChannel } from "discord.js";
-import { Player, EQBand, RepeatMode, EQList, PlayOptions, SearchPlatform, SearchQuery, SearchResult, UnresolvedSearchResult } from "lavalink-client";
-import { AnimeAnnouncement, ExecuteOptions, NotifyStatuses } from "../typings/Client";
-import BaseEmbeds from "../embeds/BaseEmbeds";
-import JoinVCError from "../errors/interactionErrors/JoinVCError";
-import ConnectionError from "../errors/interactionErrors/ConnectionError";
-import NotInVCError from "../errors/playerErrors/NotInVCError";
-import ChannelAccessError from "../errors/interactionErrors/ChannelAccessError";
+import { EmbedBuilder, TextChannel } from "discord.js";
+import { AnimeAnnouncement, AnimeMediaTypes, NotifyStatuses } from "../typings/Anime";
 import prisma from "../db";
 import { client } from "../app";
 import BaseError from "../errors/BaseError";
@@ -70,5 +64,30 @@ export default class AnimeService {
         }
 
         return embed;
+    }
+
+    public static ParseSeason(animeSeason: string){
+        if (!animeSeason || animeSeason === `?`) return `?`;
+        let params = animeSeason.split(`_`);
+        const season = {
+            summer: `Лето`,
+            autumn: `Осень`,
+            winter: `Зима`,
+            spring: `Весна`
+        }
+        
+        return `${season[params[0]] ? `${season[params[0]]} ` : ``}${params[1]}`
+    }
+
+    public static ParseMediaType(mediaType: AnimeMediaTypes){
+        const types = {
+            tv: 'ТВ-Сериал',
+            tv_special:'ТВ-Спешл',
+            special: 'Спешл',
+            ona: 'ONA',
+            ova: 'OVA',
+            movie: 'Фильм',
+        }
+        return types[mediaType] ?? `?`;
     }
 }

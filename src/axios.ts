@@ -25,7 +25,7 @@ const api = axios.create({ baseURL: 'https://api.litminka.ru/' });
 
 api.interceptors.request.use(
     function (config) {
-        LitminerDebug.Special(`[REQUEST] ${JSON.stringify(config.data, null, ` `)}`);
+        LitminerDebug.Special(`[REQUEST] (PARAMS) ${JSON.stringify(config.params, null, ` `)} (BODY) ${JSON.stringify(config.data, null, ` `)}`);
         const token = process.env.LITMINKA_TOKEN;
 
         if (!token) return config;
