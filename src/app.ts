@@ -1,6 +1,6 @@
 require("dotenv").config();
 import { login } from "./axios";
-import { BotClient } from "./structures/BotClient";
+import { BotClient } from "./structures/botClient";
 import express, { Express, Request, Response } from 'express';
 import { CustomEvents } from "./typings/Client";
 import bodyParser from "body-parser";

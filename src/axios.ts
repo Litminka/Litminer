@@ -67,7 +67,7 @@ api.interceptors.response.use(
         const status = error.response?.status;
         const config = error.response?.config;
         LitminerDebug.Error(`[RESPONSE] ${JSON.stringify(error, null, ` `)}`);
-        if (status === 422) return response; // maybe throw a validation error?
+        if (status === 422) throw new BaseError('[422]: Validation'); // maybe throw a validation error?
 
         if (status === 403) throw new BaseError("[403]: Forbidden");
 

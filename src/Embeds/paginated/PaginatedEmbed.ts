@@ -1,96 +1,95 @@
 import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
-import { ComponentType, InteractionResponse } from "discord.js";
+import { ButtonInteraction, ComponentType, EmbedBuilder, InteractionResponse } from "discord.js";
 import BaseButtons from "../buttons/BaseButons";
 import { LitminerDebug } from "../../utils/LitminerDebug";
-import LitminkaEmbeds from "../LitminkaEmbeds";
-import MusicEmbeds from "../MusicEmbeds";
-import { LitminkaAPIRequests } from "../../LitminkaAPI/requests";
 
-export enum PaginatedEmbedType{
-    Unknown = 0,
-    WatchList = 1,
-    MusicQueue = 2
-}
+type buttonCommands = Record<string, () => Promise<void>>;
+export type listCallback = (userId: string, page: number) => Promise<{
+    list: unknown[],
+    count: number,
+}>
 
-const PaginatedEmbedFunctions = {
-    0: () => {LitminerDebug.Debug(`Paginated embed default function was called`);},
-    1: LitminkaEmbeds.ShowWatchlist,
-    2: MusicEmbeds.PrintQueue
+export type renderEmbedCallBack = (data: unknown[]) => EmbedBuilder[]
+
+export interface EmbedData {
+    userId: string,
+    listLength?: number,
+    list?: unknown[],
 }
 
 export default class PaginatedEmbed {
-    private embedType: PaginatedEmbedType = null;
-    private embedFunction: Function;
-    private components = [];
-    private collector = null;
-    private page = 1;
-    private pageLimit = 10;
-    private maxPage = 0;
-    private list = [];
-    private listLength = 0;
-    private startButton = BaseButtons.PrimaryButton(`start`, null, `⏮️`).setDisabled(true);
-    private prevButton = BaseButtons.PrimaryButton(`prev`, null, `⬅️`).setDisabled(true);
-    private pageView = null;
-    private nextButton = BaseButtons.PrimaryButton(`next`, null, `➡️`);
-    private endButton = BaseButtons.PrimaryButton(`end`, null, `⏭️`);
+    protected userId = ``;
 
-    private userId = ``;
+    private page: number = 1
+    protected pageLimit: number = 10;
+    
+    protected list: unknown[] = [];
+    protected listLength: number = 0;
 
-    constructor(userId: string, embedType: PaginatedEmbedType, list?: any[], listLength?: number, ) {
+    protected set currentPage(page: number) {
+        this.page = Math.max(page, 1);
+    }
+    protected get currentPage() {
+        return this.page;
+    }
+    protected updateListCallback: listCallback = null;
+    protected renderEmbedsCallback: renderEmbedCallBack = null;
+    
+    protected components = [];
+    protected prevButton = BaseButtons.PrimaryButton(`prev`, null, `⬅️`).setDisabled(true);
+    protected nextButton = BaseButtons.PrimaryButton(`next`, null, `➡️`);
+    protected buttonCommands: buttonCommands = {
+        "prev": this.previousPage,
+        "next": this.nextPage
+    }
+
+    constructor({ userId, list, listLength }: EmbedData, updateListCallback: listCallback, renderEmbedCallBack: renderEmbedCallBack) {
+        this.updateListCallback = updateListCallback;
+        this.renderEmbedsCallback = renderEmbedCallBack;
         this.list = list ?? [];
         this.listLength = listLength ?? 0;
         this.userId = userId;
-        this.embedType = embedType ?? PaginatedEmbedType.Unknown;
-        this.embedFunction = PaginatedEmbedFunctions[embedType];
     }
 
-    public async initialize(){
-        await this.updateList(this.userId);
-        this.maxPage = Math.ceil(this.listLength / this.pageLimit);
-        this.pageView = BaseButtons.SecondaryButton(`page`, `${this.page} / ${this.maxPage ? this.maxPage : `?`}`, null).setDisabled(true);
-        this.components = [this.startButton, this.prevButton, this.pageView, this.nextButton, this.endButton];
+    public async initialize() {
+        await this.updateListData(1);
+        this.components = [this.prevButton, this.nextButton];
     }
 
-    public createResponseCollector(response: InteractionResponse){
-        this.collector = response.createMessageComponentCollector({
+    protected async updateListData(page: number) {
+        const response = await this.updateListCallback(this.userId, page);
+
+        this.list = response.list;
+        this.listLength = response.count;
+    }
+
+    public renderMessage() {
+        return {
+            embeds: this.renderEmbedsCallback(this.list),
+            components: [this.getActionRow()]
+        }
+    }
+
+    public createResponseCollector(response: InteractionResponse) {
+        const collector = response.createMessageComponentCollector({
             componentType: ComponentType.Button,
             time: 600000,
         })
 
-        this.collector.on("collect", async (button) => {
+        collector.on("collect", async (button) => {
             button.deferUpdate();
-            const selection = button.customId;
-            LitminerDebug.Debug(`${selection} pressed`);
 
-            const commands = {
-                "start": this.startPage,
-                "prev": this.previousPage,
-                "next": this.nextPage,
-                "end": this.endPage,
-            }
+            const buttonId = this.getButtonId(button);
 
-            await commands[selection].call(this, this.userId);
+            const buttonFunction = this.buttonCommands[buttonId];
+            if (typeof buttonFunction === "undefined") throw new Error(`No button command \"${buttonId}\"`);
+            await buttonFunction.call(this);
 
-            this.pageView.setLabel(`${this.page} / ${this.maxPage}`);
-            this.startButton.setDisabled(false);
-            this.prevButton.setDisabled(false);
-            this.nextButton.setDisabled(false);
-            this.endButton.setDisabled(false);
+            await this.updateListData(this.currentPage);
 
-            if (this.page <= 1) {
-                this.startButton.setDisabled(true);
-                this.prevButton.setDisabled(true);
-            }
+            this.setButtonsState();
 
-            if (this.page * this.pageLimit >= this.listLength) {
-                this.nextButton.setDisabled(true);
-                this.endButton.setDisabled(true);
-            }
-
-            LitminerDebug.Debug(`${response.client.user.id} ${response.client.user.username}`);
-            //const watchlist = await LitminkaAPIRequests.GetUserWatchlist(interaction.user.id, page, pageLimit);
-           
-            const embeds = this.getEmbeds();
+            const embeds = this.renderEmbedsCallback(this.list);
 
             return await response.edit({
                 embeds,
@@ -98,51 +97,47 @@ export default class PaginatedEmbed {
             });
         });
 
-        this.collector.on("end", async () => {
-            this.components.forEach((button) => {
+        collector.on("end", async () => {
+            for (const button of this.components) {
                 button.setDisabled(true);
-            });
+            }
+
             await response.edit({
                 components: [this.getActionRow()],
             });
         });
+        return collector;
     }
 
-    public getEmbeds(){
-        return this.embedFunction(this.list);
+    protected getButtonId(button: ButtonInteraction) {
+        const selection = button.customId;
+        LitminerDebug.Debug(`${selection} pressed`);
+        return selection;
     }
 
-    public getActionRow() { 
-        return new ActionRowBuilder<ButtonBuilder>().addComponents(this.components); 
+    protected setButtonsState() {
+        this.prevButton.setDisabled(false);
+        this.nextButton.setDisabled(false);
+
+        if (this.currentPage <= 1) {
+            this.prevButton.setDisabled(true);
+        }
+
+        if (this.currentPage * this.pageLimit >= this.listLength) {
+            this.nextButton.setDisabled(true);
+        }
     }
 
-    private async updateList(userId: string){
-        if (this.embedType != PaginatedEmbedType.WatchList) return;
-        LitminerDebug.Debug(`Loading ${this.page} page`);
-
-        const watchlist = await LitminkaAPIRequests.GetUserWatchlist(userId, this.page, this.pageLimit);
-        this.list = watchlist.list;
-        this.listLength = watchlist.count;
+    protected async nextPage() {
+        this.currentPage += 1;
     }
 
-    private async nextPage(userId: string){
-        this.page++;
-        await this.updateList(userId);
+    protected async previousPage() {
+        this.currentPage -= 1;
     }
 
-    private async previousPage(userId: string){
-        this.page--;
-        await this.updateList(userId)
-    }
-
-    private async startPage(userId: string){    
-        this.page = 1;
-        await this.updateList(userId)
-    }
-
-    private async endPage(userId: string){
-        this.page = this.maxPage;
-        await this.updateList(userId)
+    private getActionRow() {
+        return new ActionRowBuilder<ButtonBuilder>().addComponents(this.components);
     }
 
 }

@@ -1,4 +1,4 @@
-import { BotClient } from "../structures/BotClient";
+import { BotClient } from "../structures/botClient";
 import { LitminerDebug } from "../utils/LitminerDebug";
 
 

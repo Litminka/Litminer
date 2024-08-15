@@ -1,5 +1,5 @@
 import {  TextChannel } from "discord.js";
-import { BotClient } from "../structures/BotClient";
+import { BotClient } from "../structures/botClient";
 import MusicEmbeds from "../embeds/MusicEmbeds";
 import ClientEmbeds from "../embeds/ClientEmbeds";
 import { LitminerDebug } from "../utils/LitminerDebug";
