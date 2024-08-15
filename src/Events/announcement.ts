@@ -1,5 +1,5 @@
-import { CustomEvents, Event } from "../typings/Client";
-import { AnimeAnnouncement } from "../typings/Anime";
+import { CustomEvents, Event } from "../typings/client";
+import { AnimeAnnouncement } from "../typings/anime";
 import AnimeService from "../services/AnimeService";
 
 export default {

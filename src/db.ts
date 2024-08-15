@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { UserExt } from './models/User';
-import { GuildExt } from './models/Guild';
+import { UserExt } from './models/user';
+import { GuildExt } from './models/guild';
 
 const prismaClientSingleton = () => {
     return new PrismaClient()

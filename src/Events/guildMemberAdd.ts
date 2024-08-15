@@ -1,6 +1,6 @@
-import { Event } from "../typings/Client";
+import { Event } from "../typings/client";
 import { Events, User } from "discord.js";
-import { LitminerDebug } from "../utils/LitminerDebug";
+import { LitminerDebug } from "../utils/litminerDebug";
 export default {
     name: Events.GuildMemberAdd,
     execute: async (client, user: User) => {

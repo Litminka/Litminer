@@ -1,15 +1,14 @@
-import { Client, GatewayIntentBits, IntentsBitField } from "discord.js";
+import { Client, GatewayIntentBits } from "discord.js";
 import { promisify } from "util";
 import glob from "glob";
-import { LavalinkManager, MiniMap, Player } from "lavalink-client";
-import { Command, SubCommand, Event } from "../typings/Client";
+import { LavalinkManager, MiniMap } from "lavalink-client";
+import { Command, SubCommand, Event } from "../typings/client";
 import { RedisClientType, createClient } from "redis";
-import { autoPlayFunction, requesterTransformer } from "../utils/OptionalFunctions";
+import { NodesEvents } from "../lavalink-events/nodes";
+import { PlayerEvents } from "../lavalink-events/player";
 import { myCustomStore, myCustomWatcher } from "../utils/CustomClasses";
-
-import { LitminerDebug } from "../utils/LitminerDebug";
-import { NodesEvents } from "../lavalink-events/Nodes";
-import { PlayerEvents } from "../lavalink-events/Player";
+import { LitminerDebug } from "../utils/litminerDebug";
+import { requesterTransformer, autoPlayFunction } from "../utils/OptionalFunctions";
 
 
 const globPromise = promisify(glob);

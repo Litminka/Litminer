@@ -1,10 +1,10 @@
 import { EmbedBuilder, TextChannel } from "discord.js";
-import { AnimeAnnouncement, NotifyStatuses } from "../typings/Anime";
+import { AnimeAnnouncement, NotifyStatuses } from "../typings/anime";
 import prisma from "../db";
 import { client } from "../app";
-import BaseError from "../errors/BaseError";
-import LitminkaEmbeds from "../embeds/LitminkaEmbeds";
-import { LitminerDebug } from "../utils/LitminerDebug";
+import BaseError from "../errors/baseError";
+import LitminkaEmbeds from "../embeds/litminkaEmbeds";
+import { LitminerDebug } from "../utils/litminerDebug";
 
 export default class AnimeService {
     public static async NotifyGuilds(announcement: AnimeAnnouncement){

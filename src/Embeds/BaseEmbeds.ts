@@ -1,6 +1,7 @@
-import { ColorResolvable, Colors, EmbedBuilder } from "discord.js";
-import { Queue } from "lavalink-client";
-import { EmbededTrack } from "../typings/Client";
+import { ColorResolvable, EmbedBuilder, Colors } from "discord.js";
+import { Queue } from "lavalink-client/dist/types";
+import { EmbededTrack } from "../typings/client";
+
 
 export default class BaseEmbeds{
 
@@ -31,6 +32,10 @@ export default class BaseEmbeds{
 
     public static Audio(message: string): EmbedBuilder{
         return BaseEmbeds.TimestampEmbed(Colors.Blurple, `🎶 ${message}`);
+    }
+
+    public static Anime(message: string): EmbedBuilder{
+        return BaseEmbeds.TimestampEmbed(Colors.DarkVividPink, `${message}`);
     }
 }
 

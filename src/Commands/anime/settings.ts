@@ -1,4 +1,4 @@
-import { SubCommand } from "../../typings/Client";
+import { SubCommand } from "../../typings/client";
 import { SlashCommandBuilder } from "discord.js";
 import { SettingsUserSubcommand } from "../../subcommands/settings/user";
 import { SettingsGuildSubcommand } from "../../subcommands/settings/guild";

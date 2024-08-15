@@ -1,11 +1,11 @@
-import { Command } from "../../typings/Client";
-import AudioService, { SeekOptions } from "../../services/AudioService";
+import { Command } from "../../typings/client";
+import AudioService, { SeekOptions } from "../../services/audioService";
 import { ActionRowBuilder, ButtonBuilder, ComponentType, SlashCommandBuilder } from "discord.js";
-import { delay } from "../../utils/Time";
-import MusicEmbeds from "../../embeds/MusicEmbeds";
-import NotPlayingError from "../../errors/playerErrors/NotPlayingError";
-import BaseButtons from "../../embeds/buttons/BaseButons";
-import { LitminerDebug } from "../../utils/LitminerDebug";
+import { delay } from "../../utils/time";
+import MusicEmbeds from "../../embeds/musicEmbeds";
+import NotPlayingError from "../../errors/playerErrors/notPlayingError";
+import BaseButtons from "../../embeds/buttons/baseButons";
+import { LitminerDebug } from "../../utils/litminerDebug";
 
 export default {
     data: new SlashCommandBuilder()

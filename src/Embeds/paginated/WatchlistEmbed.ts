@@ -1,5 +1,5 @@
 import { ButtonBuilder } from "discord.js";
-import BaseButtons from "../buttons/BaseButons";
+import BaseButtons from "../buttons/baseButons";
 import PaginatedEmbed from "./paginatedEmbed";
 
 

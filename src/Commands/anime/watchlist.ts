@@ -1,7 +1,7 @@
-import { Command } from "../../typings/Client";
+import { Command } from "../../typings/client";
 import { SlashCommandBuilder } from "discord.js";
 import { LitminkaAPIRequests } from "../../litminka-api/requests";
-import LitminkaEmbeds from "../../embeds/LitminkaEmbeds";
+import LitminkaEmbeds from "../../embeds/litminkaEmbeds";
 import WatchlistEmbed from "../../embeds/paginated/watchlistEmbed";
 
 export default {

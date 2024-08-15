@@ -1,7 +1,7 @@
-import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
-import { ButtonInteraction, ComponentType, EmbedBuilder, InteractionResponse } from "discord.js";
-import BaseButtons from "../buttons/BaseButons";
-import { LitminerDebug } from "../../utils/LitminerDebug";
+import { EmbedBuilder, InteractionResponse, ComponentType, ButtonInteraction, ActionRowBuilder, ButtonBuilder } from "discord.js";
+import { LitminerDebug } from "../../utils/litminerDebug";
+import BaseButtons from "../buttons/baseButons";
+
 
 type buttonCommands = Record<string, () => Promise<void>>;
 export type listCallback = (userId: string, page: number) => Promise<{

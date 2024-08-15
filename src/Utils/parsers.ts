@@ -1,4 +1,4 @@
-import { AnimeMediaTypes } from "../typings/Anime";
+import { AnimeMediaTypes } from "../typings/anime";
 
 export function ParseSeason(animeSeason: string){
     if (!animeSeason || animeSeason === `?`) return `?`;

@@ -1,10 +1,10 @@
-import { Colors, EmbedBuilder } from "discord.js";
-import { Player, PlaylistInfo, Track } from "lavalink-client";
-import { formatMS_HHMMSS } from "../utils/Time";
-import { CustomRequester } from "../typings/Client";
-import BaseEmbeds, { EmbedQueue } from "./BaseEmbeds";
-import QueueEmptyError from "../errors/queueErrors/QueueEmptyError";
-import AudioService from "../services/AudioService";
+import { EmbedBuilder } from "discord.js";
+import { Track, PlaylistInfo, Player } from "lavalink-client/dist/types";
+import QueueEmptyError from "../errors/queueErrors/queueEmptyError";
+import { CustomRequester } from "../typings/client";
+import { formatMS_HHMMSS } from "../utils/time";
+import BaseEmbeds, { EmbedQueue } from "./baseEmbeds";
+
 
 export default class MusicEmbeds {
     static replacements = {

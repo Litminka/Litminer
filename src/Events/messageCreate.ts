@@ -1,6 +1,6 @@
-import { Event } from "../typings/Client";
+import { Event } from "../typings/client";
 import { Events, Message } from "discord.js";
-import { LitminerDebug } from "../utils/LitminerDebug";
+import { LitminerDebug } from "../utils/litminerDebug";
 export default {
     name: Events.MessageCreate,
     execute: async (client, message: Message) => {

@@ -1,5 +1,5 @@
-import { Command } from "../../typings/Client";
-import AudioService from "../../services/AudioService";
+import { Command } from "../../typings/client";
+import AudioService from "../../services/audioService";
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -7,10 +7,10 @@ import {
     ComponentType,
     SlashCommandBuilder,
 } from "discord.js";
-import { EmbedQueue } from "../../embeds/BaseEmbeds";
-import MusicEmbeds from "../../embeds/MusicEmbeds";
-import QueueEmptyError from "../../errors/queueErrors/QueueEmptyError";
-import { LitminerDebug } from "../../utils/LitminerDebug";
+import { EmbedQueue } from "../../embeds/baseEmbeds";
+import MusicEmbeds from "../../embeds/musicEmbeds";
+import QueueEmptyError from "../../errors/queueErrors/queueEmptyError";
+import { LitminerDebug } from "../../utils/litminerDebug";
 
 export default {
     data: new SlashCommandBuilder()

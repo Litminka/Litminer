@@ -1,10 +1,10 @@
 
-import BaseEmbeds from "../embeds/BaseEmbeds";
-import { Command, SubCommand, Event } from "../typings/Client";
+import BaseEmbeds from "../embeds/baseEmbeds";
+import { Command, SubCommand, Event } from "../typings/client";
 import {
     ChatInputCommandInteraction, CommandInteractionOptionResolver, Events, Interaction
 } from "discord.js";
-import { LitminerDebug } from "../utils/LitminerDebug";
+import { LitminerDebug } from "../utils/litminerDebug";
 
 export default {
     name: Events.InteractionCreate,

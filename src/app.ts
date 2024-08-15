@@ -1,10 +1,10 @@
 require("dotenv").config();
 import { login } from "./axios";
-import { BotClient } from "./structures/botClient";
 import express, { Express, Request, Response } from 'express';
-import { CustomEvents } from "./typings/Client";
 import bodyParser from "body-parser";
-import { LitminerDebug } from "./utils/LitminerDebug";
+import { BotClient } from "./structures/botClient";
+import { CustomEvents } from "./typings/client";
+import { LitminerDebug } from "./utils/litminerDebug";
 
 export const app: Express = express();
 const port = 3000;

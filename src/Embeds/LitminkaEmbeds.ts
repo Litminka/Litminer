@@ -1,9 +1,10 @@
-import { Colors, EmbedBuilder } from "discord.js";
-import BaseEmbeds from "./BaseEmbeds";
-import { Guild, User } from "@prisma/client";
+import { EmbedBuilder, Colors } from "discord.js";
 import { client } from "../app";
-import { AnimeAnnouncement, GroupType, WatchListWithAnime } from "../typings/Anime";
-import { ParseMediaType, ParseSeason } from "../utils/parsers";
+import { AnimeAnnouncement, GroupType, WatchListWithAnime } from "../typings/anime";
+import { ParseSeason, ParseMediaType } from "../utils/parsers";
+import BaseEmbeds from "./baseEmbeds";
+import { Guild, User } from "@prisma/client";
+
 
 export default class LitminkaEmbeds {
 
@@ -55,7 +56,7 @@ export default class LitminkaEmbeds {
 
     public static AnimeRelease(announcement: AnimeAnnouncement): EmbedBuilder {
         const animeURL = `https://litminka.ru/anime/${announcement.slug}`;
-        const embed = BaseEmbeds.Info(`Аниме начало выходить!`)
+        const embed = BaseEmbeds.Anime(`Аниме начало выходить!`)
             .setDescription(`**${announcement.animeName}**\n - [Litminka.ru](${animeURL})`);
         if (/^https?:\/\//.test(announcement.image)) embed.setImage(announcement.image);
         if (/^https?:\/\//.test(animeURL)) embed.setURL(animeURL);
@@ -106,7 +107,7 @@ export default class LitminkaEmbeds {
             on_hold: 'Отложено',
             dropped: 'Брошено',
         }
-        const embed = BaseEmbeds.Info(`${anime.name}`)
+        const embed = BaseEmbeds.Anime(`${anime.name}`)
             .addFields([
                 {
                     name: `**${animeStatus[status]}**`,
