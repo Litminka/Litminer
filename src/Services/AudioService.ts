@@ -1,8 +1,7 @@
 
-import { ChatInputCommandInteraction, GuildMember, User, VoiceChannel } from "discord.js";
-import { Player, EQBand, RepeatMode, EQList, PlayOptions, SearchPlatform, SearchQuery, SearchResult, UnresolvedSearchResult } from "lavalink-client";
+import { GuildMember, User, VoiceChannel } from "discord.js";
+import { Player, EQBand, RepeatMode, EQList, PlayOptions, SearchQuery, SearchResult, UnresolvedSearchResult } from "lavalink-client";
 import { ExecuteOptions } from "../typings/Client";
-import BaseEmbeds from "../embeds/BaseEmbeds";
 import JoinVCError from "../errors/interactionErrors/JoinVCError";
 import ConnectionError from "../errors/interactionErrors/ConnectionError";
 import NotInVCError from "../errors/playerErrors/NotInVCError";
@@ -91,15 +90,5 @@ export default class AudioService {
         if (!vc.joinable || !vc.speakable) throw new ChannelAccessError();
         if (player.voiceChannelId !== vcId) throw new NotInVCError();
         return true;
-    }
-
-    public static sliderGenerator(pos: number, maxPos: number, width?: number) {
-        let slider = '';
-        const radioButtonPos = Math.floor(pos * 30 / maxPos);
-        for (let i = 0; i < 30; i++) {
-            if (radioButtonPos === i) slider += '🔘';
-            else slider += '▬';
-        }
-        return slider;
     }
 }

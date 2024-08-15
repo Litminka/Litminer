@@ -1,12 +1,10 @@
 import { EmbedBuilder, TextChannel } from "discord.js";
-import { AnimeAnnouncement, AnimeMediaTypes, NotifyStatuses } from "../typings/Anime";
+import { AnimeAnnouncement, NotifyStatuses } from "../typings/Anime";
 import prisma from "../db";
 import { client } from "../app";
 import BaseError from "../errors/BaseError";
 import LitminkaEmbeds from "../embeds/LitminkaEmbeds";
 import { LitminerDebug } from "../utils/LitminerDebug";
-
-
 
 export default class AnimeService {
     public static async NotifyGuilds(announcement: AnimeAnnouncement){
@@ -64,30 +62,5 @@ export default class AnimeService {
         }
 
         return embed;
-    }
-
-    public static ParseSeason(animeSeason: string){
-        if (!animeSeason || animeSeason === `?`) return `?`;
-        let params = animeSeason.split(`_`);
-        const season = {
-            summer: `Лето`,
-            autumn: `Осень`,
-            winter: `Зима`,
-            spring: `Весна`
-        }
-        
-        return `${season[params[0]] ? `${season[params[0]]} ` : ``}${params[1]}`
-    }
-
-    public static ParseMediaType(mediaType: AnimeMediaTypes){
-        const types = {
-            tv: 'ТВ-Сериал',
-            tv_special:'ТВ-Спешл',
-            special: 'Спешл',
-            ona: 'ONA',
-            ova: 'OVA',
-            movie: 'Фильм',
-        }
-        return types[mediaType] ?? `?`;
     }
 }

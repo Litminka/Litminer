@@ -3,7 +3,7 @@ import BaseEmbeds from "./BaseEmbeds";
 import { Guild, User } from "@prisma/client";
 import { client } from "../app";
 import { AnimeAnnouncement, GroupType, WatchListWithAnime } from "../typings/Anime";
-import AnimeService from "../services/AnimeService";
+import { ParseMediaType, ParseSeason } from "../utils/parsers";
 
 export default class LitminkaEmbeds {
 
@@ -87,54 +87,56 @@ export default class LitminkaEmbeds {
         return embed;
     }
 
-    public static ShowWatchlist(list: WatchListWithAnime[], page: number, pageLimit: number): EmbedBuilder[] {
-        const embeds = []
-
-        for (let record of list) {
-            const { animeId, id, isFavorite, rating, status, userId, watchedEpisodes, shikimoriId, anime } = record;
-            const animeURL = `https://litminka.ru/anime/${anime.slug}`;
-            const animeStatus = {
-                planned: 'Запланировано',
-                watching: 'Смотрю',
-                rewatching: 'Пересматриваю',
-                completed: 'Просмотрено',
-                on_hold: 'Отложено',
-                dropped: 'Брошено',
-            }
-            const animeEmbed = BaseEmbeds.Info(`${anime.name}`)
-                .addFields([
-                    {
-                        name: `**${animeStatus[status]}**`,
-                        value: `${watchedEpisodes} / ${anime.maxEpisodes ? anime.maxEpisodes : `?`}`,
-                        inline: true,
-                    },
-                    {
-                        name: `**Рейтинг**`,
-                        value: `${rating} / 10`,
-                        inline: true
-                    },
-                    {
-                        name: `${isFavorite ? `❤️` : `💔`}`,
-                        value: ` `,
-                        inline: true,
-                    },
-                    {
-                        name: `**Сезон выпуска**`,
-                        value: AnimeService.ParseSeason(anime.season),
-                        inline: true
-                    },
-                    {
-                        name: `**Тип**`,
-                        value: AnimeService.ParseMediaType(anime.mediaType),
-                        inline: true
-                    }
-                ])
-            if (/^https?:\/\//.test(anime.image)) animeEmbed.setThumbnail(anime.image);
-            if (/^https?:\/\//.test(animeURL)) animeEmbed.setURL(animeURL);
-
-            embeds.push(animeEmbed);
+    public static ShowWatchlist(list: WatchListWithAnime[]): EmbedBuilder[] {
+        const embeds = [];
+        for (let anime of list) {
+            embeds.push(LitminkaEmbeds.AnimeInfo(anime));
         }
-
         return embeds;
+    }
+
+    public static AnimeInfo(record: WatchListWithAnime) {
+        const { isFavorite, rating, status, watchedEpisodes, anime } = record;
+        const animeURL = `https://litminka.ru/anime/${anime.slug}`;
+        const animeStatus = {
+            planned: 'Запланировано',
+            watching: 'Смотрю',
+            rewatching: 'Пересматриваю',
+            completed: 'Просмотрено',
+            on_hold: 'Отложено',
+            dropped: 'Брошено',
+        }
+        const embed = BaseEmbeds.Info(`${anime.name}`)
+            .addFields([
+                {
+                    name: `**${animeStatus[status]}**`,
+                    value: `${watchedEpisodes} / ${anime.maxEpisodes ? anime.maxEpisodes : `?`}`,
+                    inline: true,
+                },
+                {
+                    name: `**Рейтинг**`,
+                    value: `${rating} / 10`,
+                    inline: true
+                },
+                {
+                    name: `${isFavorite ? `❤️` : `💔`}`,
+                    value: ` `,
+                    inline: true,
+                },
+                {
+                    name: `**Сезон выпуска**`,
+                    value: ParseSeason(anime.season),
+                    inline: true
+                },
+                {
+                    name: `**Тип**`,
+                    value: ParseMediaType(anime.mediaType),
+                    inline: true
+                }
+            ])
+        if (/^https?:\/\//.test(anime.image)) embed.setThumbnail(anime.image);
+        if (/^https?:\/\//.test(animeURL)) embed.setURL(animeURL);
+
+        return embed
     }
 }
