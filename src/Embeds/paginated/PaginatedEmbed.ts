@@ -2,7 +2,6 @@ import { EmbedBuilder, InteractionResponse, ComponentType, ButtonInteraction, Ac
 import { LitminerDebug } from "../../utils/litminerDebug";
 import BaseButtons from "../buttons/baseButons";
 
-
 type buttonCommands = Record<string, () => Promise<void>>;
 export type listCallback = (userId: string, page: number) => Promise<{
     list: unknown[],
@@ -111,7 +110,6 @@ export default class PaginatedEmbed {
 
     protected getButtonId(button: ButtonInteraction) {
         const selection = button.customId;
-        LitminerDebug.Debug(`${selection} pressed`);
         return selection;
     }
 

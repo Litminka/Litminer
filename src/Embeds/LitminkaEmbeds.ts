@@ -120,7 +120,7 @@ export default class LitminkaEmbeds {
                     inline: true
                 },
                 {
-                    name: `${isFavorite ? `❤️` : `💔`}`,
+                    name: `${isFavorite ? `❤️` : `🤍`}`,
                     value: ` `,
                     inline: true,
                 },

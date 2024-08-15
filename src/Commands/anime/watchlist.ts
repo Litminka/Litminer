@@ -16,7 +16,6 @@ export default {
 
         await paginatedEmbed.initialize();
         const message = paginatedEmbed.renderMessage();
-        console.log(message);
         const response = await interaction.reply({
             ephemeral: true,
             ...message

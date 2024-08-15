@@ -1,10 +1,9 @@
-import { EmbedBuilder } from "discord.js";
-import { Track, PlaylistInfo, Player } from "lavalink-client/dist/types";
+import { Colors, EmbedBuilder } from "discord.js";
+import { Track, PlaylistInfo, Player, Queue } from "lavalink-client/dist/types";
 import QueueEmptyError from "../errors/queueErrors/queueEmptyError";
-import { CustomRequester } from "../typings/client";
+import { CustomRequester, EmbededTrack } from "../typings/client";
 import { formatMS_HHMMSS } from "../utils/time";
-import BaseEmbeds, { EmbedQueue } from "./baseEmbeds";
-
+import BaseEmbeds from "./baseEmbeds";
 
 export default class MusicEmbeds {
     static replacements = {
@@ -73,25 +72,45 @@ export default class MusicEmbeds {
         return BaseEmbeds.Error("Queue Ended");
     }
 
-    public static PrintQueue(queue: EmbedQueue): EmbedBuilder {
-        const minIndex = queue.currentIndex >= 5 ? queue.currentIndex - 5 : 0;
-        const maxIndex = queue.currentIndex <= queue.tracks.length - 5 ? queue.currentIndex + 5 : queue.tracks.length;
-        const printQueue = queue.tracks.slice(minIndex, maxIndex);
-        if (printQueue === undefined) throw new QueueEmptyError();
-        const embed = BaseEmbeds.Info("Queue");
-        for (let embedTrack of printQueue) {
-            const title = embedTrack.track.info.title.replace(/[\[\]]/g, c => this.replacements[c]);
-            const trackAuthor = embedTrack.track.info.author;
-            let trackTitle = `\`\`\`\n ${title} \`\`\``;
-            if (embedTrack.isCurrent) trackTitle = `\`\`\`css\n [${title}] \`\`\``;
-            embed.addFields([
-                {
-                    name: `**${embedTrack.position}. ${trackAuthor != undefined ? trackAuthor : `\u200B`}**`,
-                    //value: `\`\`\`css\n ${embedTrack.position}: ${trackTitle} \`\`\``
-                    value: `${trackTitle}`
-                }
-            ]);
+    public static ShowMusicQueue(tracks: EmbededTrack[]): EmbedBuilder[] {
+        if (!tracks) throw new QueueEmptyError();
+        const embeds = [];
+        for (let track of tracks) {
+            embeds.push(MusicEmbeds.TrackInfo(track));
         }
+        return embeds;
+    }
+
+    public static TrackInfo(embededTrack: EmbededTrack) {
+        const title = embededTrack.track.info.title.replace(/[\[\]]/g, c => this.replacements[c]);
+        const trackAuthor = embededTrack.track.info.author;
+        const requester = embededTrack.track.requester as CustomRequester;
+        
+        const embed = BaseEmbeds.Audio(title)
+            .addFields([
+                {
+                    name: `**Автор**`,
+                    value: trackAuthor,
+                    inline: true
+                },
+                {
+                    name: `**Длительность**`,
+                    value: `${formatMS_HHMMSS(embededTrack.track.info.duration)}`,
+                    inline: true
+                },
+                {
+                    name: `**Источник**`,
+                    value: `${embededTrack.track.info.sourceName}`,
+                    inline: true
+                }
+            ])
+            .setFooter({
+                text: `Запрошено ${(requester?.username)}`,
+                iconURL: requester?.avatar || undefined
+            });
+        if (/^https?:\/\//.test(embededTrack.track.info.artworkUrl)) embed.setThumbnail(embededTrack.track.info.artworkUrl);
+        if (/^https?:\/\//.test(embededTrack.track.info.uri)) embed.setURL(embededTrack.track.info.uri);
+        if (embededTrack.isCurrent) embed.setColor(Colors.LuminousVividPink).setDescription(`# Сейчас проигрывается`);
         return embed;
     }
 
@@ -103,18 +122,35 @@ export default class MusicEmbeds {
             .setAuthor({ name: track.info.author })
             .setImage(track.info.artworkUrl)
             .addFields([
-            {
-                name: `**Requester**`,
-                value: `<@${(track.requester as CustomRequester).id}>`,
-                inline: true
-            },
-            {
-                name: `**Progress**`,
-                value: `${formatMS_HHMMSS(position)} / ${formatMS_HHMMSS(duration)}`,
-                inline: true
-            }
-        ])
+                {
+                    name: `**Requester**`,
+                    value: `<@${(track.requester as CustomRequester).id}>`,
+                    inline: true
+                },
+                {
+                    name: `**Progress**`,
+                    value: `${formatMS_HHMMSS(position)} / ${formatMS_HHMMSS(duration)}`,
+                    inline: true
+                }
+            ])
         if (/^https?:\/\//.test(track.info.uri)) embed.setURL(track.info.uri);
         return embed;
+    }
+}
+
+
+export class EmbedQueue {
+    tracks: EmbededTrack[];
+
+    constructor(queue: Queue) {
+        this.tracks = [...queue.previous, queue.current, ...queue.tracks].map((track, i) => { return { track, isCurrent: queue.current === track, position: i + 1 } });
+    }
+
+    public async GetTracks(userId: string, page: number, pageLimit: number = 10) {
+        const currentIndex = (page - 1) * pageLimit;
+        return {
+            list: this.tracks.slice(currentIndex, currentIndex + pageLimit),
+            count: this.tracks.length
+        }
     }
 }

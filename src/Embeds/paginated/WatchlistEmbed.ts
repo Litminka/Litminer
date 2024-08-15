@@ -2,20 +2,20 @@ import { ButtonBuilder } from "discord.js";
 import BaseButtons from "../buttons/baseButons";
 import PaginatedEmbed from "./paginatedEmbed";
 
-
 export default class WatchlistEmbed extends PaginatedEmbed {
     
     protected maxPage = 2;
 
-    private pageCountButton: ButtonBuilder = BaseButtons.SecondaryButton(`page`, null, null).setDisabled(true);;
+    private pageCountButton: ButtonBuilder = BaseButtons.SecondaryButton(`page`).setDisabled(true);;
     private startButton = BaseButtons.PrimaryButton(`start`, null, `⏮️`).setDisabled(true);
     private endButton = BaseButtons.PrimaryButton(`end`, null, `⏭️`);
 
     public async initialize() {
         await this.updateListData(1);
-        this.components = [this.startButton, this.prevButton, this.pageCountButton, this.nextButton, this.endButton];
+        
         this.maxPage = Math.ceil(this.listLength / this.pageLimit);
-        this.pageCountButton.setLabel(`${this.currentPage} / ${this.maxPage ? this.maxPage : `?`}`)
+        this.pageCountButton.setLabel(`${this.currentPage} / ${this.maxPage ? this.maxPage : `?`}`);
+        this.components = [this.startButton, this.prevButton, this.pageCountButton, this.nextButton, this.endButton];
 
         this.buttonCommands = {
             "start": this.startPage,
