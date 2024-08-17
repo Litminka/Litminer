@@ -4,6 +4,7 @@ import QueueEmptyError from "../errors/queueErrors/queueEmptyError";
 import { CustomRequester, EmbededTrack } from "../typings/client";
 import { formatMS_HHMMSS } from "../utils/time";
 import BaseEmbeds from "./baseEmbeds";
+import { createFilledString } from "../utils/helpers";
 
 export default class MusicEmbeds {
     static replacements = {
@@ -82,6 +83,7 @@ export default class MusicEmbeds {
     }
 
     public static TrackInfo(embededTrack: EmbededTrack) {
+        //let title = createFilledString(embededTrack.track.info.title.replace(/[\[\]]/g, c => this.replacements[c]));
         const title = embededTrack.track.info.title.replace(/[\[\]]/g, c => this.replacements[c]);
         const trackAuthor = embededTrack.track.info.author;
         const requester = embededTrack.track.requester as CustomRequester;
@@ -110,7 +112,7 @@ export default class MusicEmbeds {
             });
         if (/^https?:\/\//.test(embededTrack.track.info.artworkUrl)) embed.setThumbnail(embededTrack.track.info.artworkUrl);
         if (/^https?:\/\//.test(embededTrack.track.info.uri)) embed.setURL(embededTrack.track.info.uri);
-        if (embededTrack.isCurrent) embed.setColor(Colors.LuminousVividPink).setDescription(`# Сейчас проигрывается`);
+        if (embededTrack.isCurrent) embed.setColor(Colors.LuminousVividPink).setDescription(`## Текущий трек`);
         return embed;
     }
 

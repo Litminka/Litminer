@@ -2,6 +2,8 @@ import { ColorResolvable, EmbedBuilder, Colors } from "discord.js";
 
 export default class BaseEmbeds {
 
+    static titleLength = 45;
+
     public static TimestampEmbed(color?: ColorResolvable, message?: string): EmbedBuilder {
         const embed = new EmbedBuilder()
             .setTimestamp();

@@ -4,7 +4,7 @@ import { AnimeAnnouncement, GroupType, WatchListWithAnime } from "../typings/ani
 import { ParseSeason, ParseMediaType } from "../utils/parsers";
 import BaseEmbeds from "./baseEmbeds";
 import { Guild, User } from "@prisma/client";
-
+import { createFilledString } from "../utils/helpers";
 
 export default class LitminkaEmbeds {
 
@@ -43,7 +43,7 @@ export default class LitminkaEmbeds {
                     value: guild.isNotifiable ? `Да` : `Нет`
                 }
             ])
-            .setThumbnail((await client.guilds.cache.get(guild.guildId)).iconURL())
+            .setThumbnail(guild.icon || (await client.guilds.cache.get(guild.guildId)).iconURL())
         if (guild.isNotifiable)
             embed.addFields([
                 {
@@ -55,9 +55,11 @@ export default class LitminkaEmbeds {
     }
 
     public static AnimeRelease(announcement: AnimeAnnouncement): EmbedBuilder {
-        const animeURL = `https://litminka.ru/anime/${announcement.slug}`;
+        let animeURL = `https://litminka.ru/anime/${announcement.slug}?`;
+        if (announcement.episode != null) animeURL += `episode=${announcement.episode}&`;
+        if (announcement.groupName != null) animeURL += `translation=${announcement.groupName}&`;
         const embed = BaseEmbeds.Anime(`Аниме начало выходить!`)
-            .setDescription(`**${announcement.animeName}**\n - [Litminka.ru](${animeURL})`);
+            .setDescription(`**${announcement.animeName}**`);
         if (/^https?:\/\//.test(announcement.image)) embed.setImage(announcement.image);
         if (/^https?:\/\//.test(animeURL)) embed.setURL(animeURL);
         return embed;
@@ -107,6 +109,7 @@ export default class LitminkaEmbeds {
             on_hold: 'Отложено',
             dropped: 'Брошено',
         }
+        //let title = createFilledString(anime.name);
         const embed = BaseEmbeds.Anime(`${anime.name}`)
             .addFields([
                 {
