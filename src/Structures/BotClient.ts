@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits, Partials } from "discord.js";
 import { promisify } from "util";
 import glob from "glob";
 import { LavalinkManager, MiniMap } from "lavalink-client";
@@ -6,9 +6,9 @@ import { Command, SubCommand, Event } from "../typings/client";
 import { RedisClientType, createClient } from "redis";
 import { NodesEvents } from "../lavalink-events/nodes";
 import { PlayerEvents } from "../lavalink-events/player";
-import { myCustomStore, myCustomWatcher } from "../utils/CustomClasses";
+import { myCustomStore, myCustomWatcher } from "../utils/customClasses";
 import { LitminerDebug } from "../utils/litminerDebug";
-import { requesterTransformer, autoPlayFunction } from "../utils/OptionalFunctions";
+import { requesterTransformer, autoPlayFunction } from "../utils/optionalFunctions";
 
 
 const globPromise = promisify(glob);
@@ -26,7 +26,11 @@ export class BotClient extends Client {
                 GatewayIntentBits.GuildMessages,
                 GatewayIntentBits.DirectMessages,
                 GatewayIntentBits.MessageContent,
-                GatewayIntentBits.GuildVoiceStates
+                GatewayIntentBits.GuildVoiceStates,
+                GatewayIntentBits.DirectMessages
+            ],
+            partials:[
+                Partials.Channel
             ]
         });
 
@@ -146,7 +150,7 @@ export class BotClient extends Client {
     }
 
     private async RegisterEvents(){
-        const EventFiles = await globPromise(`${__dirname}/../Events/*{.ts,.js}`);
+        const EventFiles = await globPromise(`${__dirname}/../Events/**/*{.ts,.js}`);
 
         EventFiles.forEach(async (FilePath) => {
             const event: Event = await this.ImportFile(FilePath) as Event;
