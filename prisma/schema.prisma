@@ -15,6 +15,7 @@ datasource db {
 
 model User {
   id                 Int                   @id @default(autoincrement())
+  icon               String?               
   discordId          String                @unique
   litminkaId         String                @unique
   username           String                @default("")
@@ -23,6 +24,7 @@ model User {
 
 model Guild {
   id                 Int                   @id @default(autoincrement())
+  icon               String?               
   guildId            String                @unique
   name               String                @default("")
   isNotifiable       Boolean               @default(false)

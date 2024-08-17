@@ -1,13 +1,33 @@
 import { Guild, Prisma } from "@prisma/client";
 import prisma from "../db";
+import { Guild as DSGuild } from "discord.js";
 
 const extention = Prisma.defineExtension({
     name: 'GuildModel',
     model: {
         guild: {
+            async createGuild(guild: DSGuild) {
+                const { id, name } = guild;
+                await prisma.guild.create({
+                    data: {
+                        guildId: id,
+                        name,
+                        isNotifiable: false,
+                        icon: guild.iconURL()
+                    }
+                })
+            },
+            async removeGuild(guild: DSGuild) {
+                const { id } = guild;
+                await prisma.guild.delete({
+                    where:{
+                        guildId: id
+                    }
+                })
+            },
             /**
              * @param guildId
-             * @returns User object
+             * @returns Prisma.Guild object
              */
             async getSettings(guildId: string) {
                 return await prisma.guild.findFirst({
@@ -16,7 +36,7 @@ const extention = Prisma.defineExtension({
                     }
                 });
             },
-            async getNotifiable(){
+            async getNotifiable() {
                 return await prisma.guild.findMany({
                     where: {
                         isNotifiable: true,
@@ -26,19 +46,19 @@ const extention = Prisma.defineExtension({
                     }
                 });
             },
-            async updateSettings(guild: Guild){
-                const {id, isNotifiable, notifyChannelId} = guild;
+            async updateSettings(guild: Guild) {
+                const { id, isNotifiable, notifyChannelId } = guild;
                 return await prisma.guild.update({
                     where: {
                         id
                     },
-                    data:{
+                    data: {
                         isNotifiable,
                         notifyChannelId
                     }
                 });
             }
-            
+
         }
     }
 });

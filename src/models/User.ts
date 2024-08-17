@@ -1,10 +1,23 @@
 import { Prisma, User } from "@prisma/client";
 import prisma from "../db";
+import { User as DSUser } from "discord.js";
 
 const extention = Prisma.defineExtension({
     name: 'UserModel',
     model: {
         user: {
+            async createUser(user: DSUser, litminkaId: string) {
+                const { id, username, avatar } = user;
+                await prisma.user.create({
+                    data: {
+                        discordId: id,
+                        litminkaId,
+                        username,
+                        isNotifiable: false,
+                        icon: avatar
+                    }
+                })
+            },
             async findNotifiable(litminkaIds: number[]) {
                 return await prisma.user.findMany({
                     where: {
@@ -39,13 +52,13 @@ const extention = Prisma.defineExtension({
                 });
             },
 
-            async updateSettings(user: User){
-                const {id, isNotifiable} = user;
+            async updateSettings(user: User) {
+                const { id, isNotifiable } = user;
                 return await prisma.user.update({
                     where: {
                         id
                     },
-                    data:{
+                    data: {
                         isNotifiable
                     }
                 });
