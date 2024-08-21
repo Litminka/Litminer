@@ -1,6 +1,7 @@
 import axios, { AxiosError } from "axios";
 import BaseError from "./errors/baseError";
 import { LitminerDebug } from "./utils/litminerDebug";
+import NotFoundError from "./errors/apiErrors/notFoundError";
 
 enum UnauthorizedTypes {
     Unauthorized = 'unauthorized',
@@ -66,12 +67,12 @@ api.interceptors.response.use(
         const response = error.response;
         const status = error.response?.status;
         const config = error.response?.config;
-        LitminerDebug.Error(`[RESPONSE] ${JSON.stringify(error, null, ` `)}`);
-        if (status === 422) throw new BaseError('[422]: Validation'); // maybe throw a validation error?
+        LitminerDebug.Error(`[RESPONSE] ${JSON.stringify(response.data, null, ` `)}`);
+        if (status === 422) throw new BaseError(`[422]: Validation`); // maybe throw a validation error?
 
         if (status === 403) throw new BaseError("[403]: Forbidden");
 
-        if (status === 404) throw new BaseError('[404]: Not found');
+        if (status === 404) throw new NotFoundError();
 
         if (status === 401) {
             const refresh = process.env.LITMINKA_REFRESH_TOKEN;

@@ -6,7 +6,7 @@ export default class WatchlistEmbed extends PaginatedEmbed {
     
     protected maxPage = 2;
 
-    private pageCountButton: ButtonBuilder = BaseButtons.SecondaryButton(`page`).setDisabled(true);;
+    private pageCountButton: ButtonBuilder = BaseButtons.SecondaryButton(`page`).setDisabled(true);
     private startButton = BaseButtons.PrimaryButton(`start`, null, `⏮️`).setDisabled(true);
     private endButton = BaseButtons.PrimaryButton(`end`, null, `⏭️`);
 

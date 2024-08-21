@@ -1,11 +1,11 @@
 import { EmbedBuilder, InteractionResponse, ComponentType, ButtonInteraction, ActionRowBuilder, ButtonBuilder } from "discord.js";
-import { LitminerDebug } from "../../utils/litminerDebug";
 import BaseButtons from "../buttons/baseButons";
+import BaseError from "../../errors/baseError";
 
 type buttonCommands = Record<string, () => Promise<void>>;
-export type listCallback = (userId: string, page: number) => Promise<{
+export type listCallback = (userId: string, page: number, pageLimit: number, ...params: unknown[]) => Promise<{
     list: unknown[],
-    count: number,
+    count: number
 }>
 
 export type renderEmbedCallBack = (data: unknown[]) => EmbedBuilder[]
@@ -13,11 +13,11 @@ export type renderEmbedCallBack = (data: unknown[]) => EmbedBuilder[]
 export interface EmbedData {
     userId: string,
     listLength?: number,
-    list?: unknown[],
+    list?: unknown[]
 }
 
 export default class PaginatedEmbed {
-    protected userId = ``;
+    protected discordId = ``;
 
     private page: number = 1
     protected pageLimit: number = 10;
@@ -42,22 +42,26 @@ export default class PaginatedEmbed {
         "next": this.nextPage
     }
 
-    constructor({ userId, list, listLength }: EmbedData, updateListCallback: listCallback, renderEmbedCallBack: renderEmbedCallBack) {
+    protected params: unknown[] = [];
+
+    constructor({ userId, list, listLength }: EmbedData, updateListCallback: listCallback, renderEmbedCallBack: renderEmbedCallBack, ...params: unknown[]) {
         this.updateListCallback = updateListCallback;
         this.renderEmbedsCallback = renderEmbedCallBack;
         this.list = list ?? [];
         this.listLength = listLength ?? 0;
-        this.userId = userId;
+        this.discordId = userId;
+        this.params = params;
     }
 
     public async initialize() {
         await this.updateListData(1);
+        this.setButtonsState();
         this.components = [this.prevButton, this.nextButton];
     }
 
     protected async updateListData(page: number) {
-        const response = await this.updateListCallback(this.userId, page);
-
+        const response = await this.updateListCallback(this.discordId, page, this.pageLimit, ...this.params);
+        
         this.list = response.list;
         this.listLength = response.count;
     }
@@ -81,7 +85,7 @@ export default class PaginatedEmbed {
             const buttonId = this.getButtonId(button);
 
             const buttonFunction = this.buttonCommands[buttonId];
-            if (typeof buttonFunction === "undefined") throw new Error(`No button command \"${buttonId}\"`);
+            if (typeof buttonFunction === "undefined") throw new BaseError(`No button command \"${buttonId}\"`);
             await buttonFunction.call(this);
 
             await this.updateListData(this.currentPage);
@@ -121,7 +125,7 @@ export default class PaginatedEmbed {
             this.prevButton.setDisabled(true);
         }
 
-        if (this.currentPage * this.pageLimit >= this.listLength) {
+        if (this.currentPage * this.pageLimit >= this.listLength || this.listLength <= this.pageLimit) {
             this.nextButton.setDisabled(true);
         }
     }

@@ -1,8 +1,8 @@
 import { Command } from "../../typings/client";
 import { SlashCommandBuilder } from "discord.js";
-import { LitminkaAPIRequests } from "../../litminka-api/requests";
 import LitminkaEmbeds from "../../embeds/litminkaEmbeds";
 import WatchlistEmbed from "../../embeds/paginated/watchlistEmbed";
+import { APIRequestService } from "../../services/apiRequestService";
 
 export default {
     data: new SlashCommandBuilder()
@@ -12,7 +12,7 @@ export default {
 
         const paginatedEmbed = new WatchlistEmbed({
             userId: interaction.user.id
-        }, LitminkaAPIRequests.GetUserWatchlist, LitminkaEmbeds.ShowWatchlist);
+        }, APIRequestService.GetUserWatchlist, LitminkaEmbeds.ShowWatchlist);
 
         await paginatedEmbed.initialize();
         const message = paginatedEmbed.renderMessage();

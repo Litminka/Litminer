@@ -1,12 +1,23 @@
-import { EmbedBuilder, Colors } from "discord.js";
+import { EmbedBuilder, Colors, Embed } from "discord.js";
 import { client } from "../app";
-import { AnimeAnnouncement, GroupType, WatchListWithAnime } from "../typings/anime";
+import { Anime, AnimeAnnouncement, GroupType, ShortAnime, WatchListWithAnime } from "../typings/anime";
 import { ParseSeason, ParseMediaType } from "../utils/parsers";
 import BaseEmbeds from "./baseEmbeds";
 import { Guild, User } from "@prisma/client";
 import { createFilledString } from "../utils/helpers";
 
 export default class LitminkaEmbeds {
+    static animeStatus = {
+        planned: 'Запланировано',
+        watching: 'Смотрю',
+        rewatching: 'Пересматриваю',
+        completed: 'Просмотрено',
+        on_hold: 'Отложено',
+        dropped: 'Брошено',
+        announced: 'Анонсировано',
+        released: 'Вышло',
+        ongoing: 'Выходит',
+    }
 
     public static async UserProfile(user: User): Promise<EmbedBuilder> {
         const embed = BaseEmbeds.Info("Информация о пользователе")
@@ -93,27 +104,54 @@ export default class LitminkaEmbeds {
     public static ShowWatchlist(list: WatchListWithAnime[]): EmbedBuilder[] {
         const embeds = [];
         for (let anime of list) {
-            embeds.push(LitminkaEmbeds.AnimeInfo(anime));
+            embeds.push(LitminkaEmbeds.WatchlistAnimeInfo(anime));
         }
         return embeds;
     }
 
-    public static AnimeInfo(record: WatchListWithAnime) {
-        const { isFavorite, rating, status, watchedEpisodes, anime } = record;
-        const animeURL = `https://litminka.ru/anime/${anime.slug}`;
-        const animeStatus = {
-            planned: 'Запланировано',
-            watching: 'Смотрю',
-            rewatching: 'Пересматриваю',
-            completed: 'Просмотрено',
-            on_hold: 'Отложено',
-            dropped: 'Брошено',
+    public static ShowAnimeSearch(list: Anime[]): EmbedBuilder[] {
+        const embeds = [];
+        for (let anime of list) {
+            embeds.push(LitminkaEmbeds.AnimeShortInfo(anime));
         }
+        return embeds;
+    }
+    public static AnimeShortInfo(anime: Anime): any {
+        const animeURL = `https://litminka.ru/anime/${anime.slug}`;
+        
         //let title = createFilledString(anime.name);
         const embed = BaseEmbeds.Anime(`${anime.name}`)
             .addFields([
                 {
-                    name: `**${animeStatus[status]}**`,
+                    name: `**Рейтинг**`,
+                    value: `${anime.rating ?? (anime.shikimoriRating ?? `?`)} / 10`,
+                    inline: true
+                },
+                {
+                    name: `**Тип**`,
+                    value: ParseMediaType(anime.mediaType),
+                    inline: true
+                },
+                {
+                    name: `**Жанры**`,
+                    value: (anime.genres.map(genre => genre.nameRussian)).join(`, `)
+                }
+            ])
+        if (/^https?:\/\//.test(anime.image)) embed.setThumbnail(anime.image);
+        if (/^https?:\/\//.test(animeURL)) embed.setURL(animeURL);
+
+        return embed
+    }
+
+    public static WatchlistAnimeInfo(record: WatchListWithAnime) {
+        const { isFavorite, rating, status, watchedEpisodes, anime } = record;
+        const animeURL = `https://litminka.ru/anime/${anime.slug}`;
+        
+        //let title = createFilledString(anime.name);
+        const embed = BaseEmbeds.Anime(`${anime.name}`)
+            .addFields([
+                {
+                    name: `**${LitminkaEmbeds.animeStatus[status]}**`,
                     value: `${watchedEpisodes} / ${anime.maxEpisodes ? anime.maxEpisodes : `?`}`,
                     inline: true,
                 },

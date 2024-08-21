@@ -7,6 +7,7 @@ import LitminkaEmbeds from "../embeds/litminkaEmbeds";
 import { LitminerDebug } from "../utils/litminerDebug";
 
 export default class AnimeService {
+
     public static async NotifyGuilds(announcement: AnimeAnnouncement){
         const guilds = await prisma.guild.getNotifiable();
         if (guilds.length == 0) LitminerDebug.Warning(`No guilds to notify`);
