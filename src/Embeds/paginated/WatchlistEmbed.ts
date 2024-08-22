@@ -11,12 +11,16 @@ export default class WatchlistEmbed extends PaginatedEmbed {
     private endButton = BaseButtons.PrimaryButton(`end`, null, `⏭️`);
 
     public async initialize() {
-        await this.updateListData(1);
-        
+        await super.initialize();
         this.maxPage = Math.ceil(this.listLength / this.pageLimit);
         this.pageCountButton.setLabel(`${this.currentPage} / ${this.maxPage ? this.maxPage : `?`}`);
-        this.components = [this.startButton, this.prevButton, this.pageCountButton, this.nextButton, this.endButton];
+    }
 
+    protected setComponents(){
+        this.components = [this.startButton, this.prevButton, this.pageCountButton, this.nextButton, this.endButton];
+    }
+
+    protected setButtomCommands(): void {
         this.buttonCommands = {
             "start": this.startPage,
             "prev": this.previousPage,

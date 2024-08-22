@@ -1,6 +1,8 @@
 import { EmbedBuilder, InteractionResponse, ComponentType, ButtonInteraction, ActionRowBuilder, ButtonBuilder } from "discord.js";
 import BaseButtons from "../buttons/baseButons";
 import BaseError from "../../errors/baseError";
+import BaseEmbeds from "../baseEmbeds";
+import { LitminerDebug } from "../../utils/litminerDebug";
 
 type buttonCommands = Record<string, () => Promise<void>>;
 export type listCallback = (userId: string, page: number, pageLimit: number, ...params: unknown[]) => Promise<{
@@ -20,7 +22,7 @@ export default class PaginatedEmbed {
     protected discordId = ``;
 
     private page: number = 1
-    protected pageLimit: number = 10;
+    protected pageLimit: number = 5;
     
     protected list: unknown[] = [];
     protected listLength: number = 0;
@@ -37,10 +39,7 @@ export default class PaginatedEmbed {
     protected components = [];
     protected prevButton = BaseButtons.PrimaryButton(`prev`, null, `⬅️`).setDisabled(true);
     protected nextButton = BaseButtons.PrimaryButton(`next`, null, `➡️`);
-    protected buttonCommands: buttonCommands = {
-        "prev": this.previousPage,
-        "next": this.nextPage
-    }
+    protected buttonCommands: buttonCommands = {};
 
     protected params: unknown[] = [];
 
@@ -55,8 +54,20 @@ export default class PaginatedEmbed {
 
     public async initialize() {
         await this.updateListData(1);
+        this.setButtomCommands();
+        this.setComponents();
         this.setButtonsState();
+    }
+
+    protected setComponents(){
         this.components = [this.prevButton, this.nextButton];
+    }
+
+    protected setButtomCommands(){
+        this.buttonCommands = {
+            "prev": this.previousPage,
+            "next": this.nextPage
+        }
     }
 
     protected async updateListData(page: number) {
@@ -82,22 +93,30 @@ export default class PaginatedEmbed {
         collector.on("collect", async (button) => {
             button.deferUpdate();
 
-            const buttonId = this.getButtonId(button);
+            try{
+                const buttonId = this.getButtonId(button);
 
-            const buttonFunction = this.buttonCommands[buttonId];
-            if (typeof buttonFunction === "undefined") throw new BaseError(`No button command \"${buttonId}\"`);
-            await buttonFunction.call(this);
+                const buttonFunction = this.buttonCommands[buttonId];
+                if (typeof buttonFunction === "undefined") throw new BaseError(`No button command \"${buttonId}\"`);
+                await buttonFunction.call(this);
+    
+                await this.updateListData(this.currentPage);
+    
+                this.setButtonsState();
+    
+                const embeds = this.renderEmbedsCallback(this.list);
 
-            await this.updateListData(this.currentPage);
-
-            this.setButtonsState();
-
-            const embeds = this.renderEmbedsCallback(this.list);
-
-            return await response.edit({
-                embeds,
-                components: [this.getActionRow()]
-            });
+                return await response.edit({
+                    embeds,
+                    components: [this.getActionRow()]
+                });
+            } catch(error){
+                LitminerDebug.Error(error.message);
+                return await response.edit({
+                    embeds: [BaseEmbeds.Error(error)],
+                    components: []
+                })
+            }
         });
 
         collector.on("end", async () => {
