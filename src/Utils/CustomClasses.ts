@@ -1,7 +1,7 @@
 import { MiniMap, QueueChangesWatcher, QueueStoreManager, StoredQueue } from "lavalink-client";
 import { RedisClientType } from "redis";
-import { BotClient } from "../structures/botClient";
-import { LitminerDebug } from "./litminerDebug";
+import { BotClient } from "../structures/BotClient";
+import { LitminerDebug } from "./LitminerDebug";
 
 export class myCustomStore implements QueueStoreManager {
     private redis:RedisClientType|MiniMap<string, string>;

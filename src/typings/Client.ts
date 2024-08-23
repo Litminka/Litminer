@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction, SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder } from "discord.js";
 import { Track, UnresolvedTrack } from "lavalink-client/dist/types";
-import { BotClient } from "../structures/botClient";
+import { BotClient } from "../structures/BotClient";
 
 export interface ExecuteOptions {
     client: BotClient;

@@ -1,9 +1,9 @@
 import { Command } from "../../typings/client";
-import AudioService from "../../services/audioService";
+import AudioService from "../../services/AudioService";
 import { SlashCommandBuilder } from "discord.js";
-import MusicEmbeds, { EmbedQueue } from "../../embeds/musicEmbeds";
-import QueueEmptyError from "../../errors/queueErrors/queueEmptyError";
-import PaginatedEmbed from "../../embeds/paginated/paginatedEmbed";
+import MusicEmbeds, { EmbedQueue } from "../../embeds/MusicEmbeds";
+import QueueEmptyError from "../../errors/queue/QueueEmptyError";
+import PaginatedEmbed from "../../embeds/paginated/PaginatedEmbed";
 
 export default {
     data: new SlashCommandBuilder()

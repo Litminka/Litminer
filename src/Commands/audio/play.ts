@@ -2,13 +2,13 @@ import { CommandInteractionOptionResolver, GuildMember, SlashCommandBuilder, Voi
 import { Command } from "../../typings/client";
 import { formatMS_HHMMSS } from "../../utils/time";
 import { SearchPlatform, SearchResult, Track } from "lavalink-client";
-import AudioService from "../../services/audioService";
-import AutocompleteService from "../../services/autocompleteService";
-import MusicEmbeds from "../../embeds/musicEmbeds";
-import JoinVCError from "../../errors/interactionErrors/joinVCError";
-import ChannelAccessError from "../../errors/interactionErrors/channelAccessError";
-import NoTracksError from "../../errors/searchErrors/noTracksError";
-import NotInVCError from "../../errors/playerErrors/notInVCError";
+import AudioService from "../../services/AudioService";
+import AutocompleteService from "../../services/AutocompleteService";
+import MusicEmbeds from "../../embeds/MusicEmbeds";
+import JoinVCError from "../../errors/interaction/JoinVCError";
+import ChannelAccessError from "../../errors/interaction/ChannelAccessError";
+import NoTracksError from "../../errors/search/NoTracksError";
+import NotInVCError from "../../errors/player/NotInVCError";
 
 
 

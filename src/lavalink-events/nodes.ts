@@ -1,5 +1,5 @@
-import { BotClient } from "../structures/botClient";
-import { LitminerDebug } from "../utils/litminerDebug";
+import { BotClient } from "../structures/BotClient";
+import { LitminerDebug } from "../utils/LitminerDebug";
 
 
 export function NodesEvents(client:BotClient) {

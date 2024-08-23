@@ -1,10 +1,9 @@
 import { api } from "../axios";
 import prisma from "../db";
-import NoIntegrationError from "../errors/apiErrors/noIntegrationError";
-import NotFoundError from "../errors/apiErrors/notFoundError";
-import BaseError from "../errors/baseError";
+import NoIntegrationError from "../errors/api/NoIntegrationError";
+import NotFoundError from "../errors/api/NotFoundError";
+import BaseError from "../errors/BaseError";
 import { Anime, FollowTypes } from "../typings/anime";
-import { LitminerDebug } from "../utils/litminerDebug";
 
 export class APIRequestService {
 
