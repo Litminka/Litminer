@@ -4,7 +4,7 @@ import { ActionRowBuilder, ButtonBuilder, ComponentType, SlashCommandBuilder } f
 import { delay } from "../../utils/time";
 import MusicEmbeds from "../../embeds/musicEmbeds";
 import NotPlayingError from "../../errors/playerErrors/notPlayingError";
-import BaseButtons from "../../embeds/buttons/baseButons";
+import BaseButtons from "../../embeds/buttons/baseButtons";
 import { LitminerDebug } from "../../utils/litminerDebug";
 
 export default {

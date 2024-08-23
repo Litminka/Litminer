@@ -1,5 +1,5 @@
 import { ButtonBuilder } from "discord.js";
-import BaseButtons from "../buttons/baseButons";
+import BaseButtons from "../buttons/baseButtons";
 import PaginatedEmbed from "./paginatedEmbed";
 import { Anime, AnimeStatuses, FollowTypes, TranslationGroup } from "../../typings/anime";
 import { APIRequestService } from "../../services/apiRequestService";

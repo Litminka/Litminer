@@ -1,5 +1,5 @@
 import { ButtonBuilder } from "discord.js";
-import BaseButtons from "../buttons/baseButons";
+import BaseButtons from "../buttons/baseButtons";
 import PaginatedEmbed from "./paginatedEmbed";
 
 export default class WatchlistEmbed extends PaginatedEmbed {

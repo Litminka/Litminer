@@ -1,5 +1,5 @@
 import { EmbedBuilder, InteractionResponse, ComponentType, ButtonInteraction, ActionRowBuilder, ButtonBuilder } from "discord.js";
-import BaseButtons from "../buttons/baseButons";
+import BaseButtons from "../buttons/baseButtons";
 import BaseError from "../../errors/baseError";
 import BaseEmbeds from "../baseEmbeds";
 import { LitminerDebug } from "../../utils/litminerDebug";

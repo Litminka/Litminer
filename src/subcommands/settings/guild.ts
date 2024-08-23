@@ -3,7 +3,7 @@ import { Guild } from "@prisma/client";
 import prisma from "../../db";
 import LitminkaEmbeds from "../../embeds/litminkaEmbeds";
 import { LitminerDebug } from "../../utils/litminerDebug";
-import BaseButtons from "../../embeds/buttons/baseButons";
+import BaseButtons from "../../embeds/buttons/baseButtons";
 import { ActionRowBuilder, ButtonBuilder, ChannelSelectMenuBuilder, ChannelType, ComponentType, GatewayIntentBits, PermissionsBitField } from "discord.js";
 import { api } from "../../axios";
 import BaseError from "../../errors/baseError";
