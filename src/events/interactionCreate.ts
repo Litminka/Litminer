@@ -1,5 +1,5 @@
 
-import BaseEmbeds from "../embeds/baseEmbeds";
+import BaseEmbeds from "../embeds/BaseEmbeds";
 import { Command, SubCommand, Event } from "../typings/client";
 import {
     ChatInputCommandInteraction, CommandInteractionOptionResolver, Events, Interaction
