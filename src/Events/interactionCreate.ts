@@ -18,8 +18,8 @@ export default {
             if (interaction.isCommand()) {
                 LitminerDebug.Debug(`Executing ${interaction.commandName} command`);
                 if (subCommand) {
-                    if (typeof (command as SubCommand).execute[subCommand] !== "function") return LitminerDebug.Error(`Sub-Command is missing property "execute#${subCommand}".`);
-                    // execute subcommand
+                    if (typeof (command as SubCommand).execute[subCommand] !== "function") 
+                        return LitminerDebug.Error(`Sub-Command is missing property "execute#${subCommand}".`);
                     LitminerDebug.Debug(`Executing ${subCommand} sub-command`);
                     return await (command as SubCommand).execute[subCommand]({ client, interaction: interaction as ChatInputCommandInteraction<"cached"> });
                 }
@@ -29,17 +29,16 @@ export default {
             if (interaction.isAutocomplete()) {
                 LitminerDebug.Debug(`Executing ${interaction.commandName}-autocomplete command`);
                 if (subCommand) {
-                    if (typeof (command as SubCommand).autocomplete?.[subCommand] !== "function") return LitminerDebug.Error(`Sub-Command is missing property "autocomplete#${subCommand}".`);
-                    // execute subcommand-autocomplete
+                    if (typeof (command as SubCommand).autocomplete?.[subCommand] !== "function") 
+                        return LitminerDebug.Error(`Sub-Command is missing property "autocomplete#${subCommand}".`);
                     LitminerDebug.Debug(`Executing ${subCommand}-autocomplete sub-command`);
                     return await (command as SubCommand).autocomplete?.[subCommand]({ client, interaction });
                 }
                 if (!(command as Command).autocomplete) return LitminerDebug.Error(`Command is missing property "autocomplete".`);
-                // execute command-autocomplete
                 return await (command as Command).autocomplete?.({ client, interaction });
             }
         } catch (error) {
-            LitminerDebug.Error(error.message);
+            LitminerDebug.Error(error.stack);
             if (interaction.isAutocomplete()) {
                 LitminerDebug.Error(`Error in autocomplete`);
                 return;

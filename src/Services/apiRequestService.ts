@@ -2,13 +2,16 @@ import { api } from "../axios";
 import prisma from "../db";
 import NoIntegrationError from "../errors/apiErrors/noIntegrationError";
 import NotFoundError from "../errors/apiErrors/notFoundError";
+import BaseError from "../errors/baseError";
 import { Anime, FollowTypes } from "../typings/anime";
 import { LitminerDebug } from "../utils/litminerDebug";
 
 export class APIRequestService {
 
     public static async GetUserWatchlist(discordId: string, page: number, pageLimit: number = 10, ...params: unknown[]) {
-        const userId = (await prisma.user.getSettings(discordId)).litminkaId;
+        const userSettings = await prisma.user.getSettings(discordId);
+        if (!userSettings) throw new BaseError(`User is not registered`);
+        const userId = userSettings.litminkaId;
         if (!userId) throw new NoIntegrationError();
         return (await api.get(`watch-list`, {
             params: {
@@ -40,7 +43,9 @@ export class APIRequestService {
     }
 
     public static async FollowAnime(discordId: string, animeId: number, groupName: string, type: FollowTypes) {
-        const userId = (await prisma.user.getSettings(discordId)).litminkaId;
+        const userSettings = await prisma.user.getSettings(discordId);
+        if (!userSettings) throw new BaseError(`User is not registered`);
+        const userId = userSettings.litminkaId;
         if (!userId) throw new NoIntegrationError();
         return (await api.post(`anime/follow/${animeId}`, {
                 groupName,
@@ -51,7 +56,9 @@ export class APIRequestService {
     }
 
     public static async UnfollowAnime(discordId: string, animeId: number, groupName: string) {
-        const userId = (await prisma.user.getSettings(discordId)).litminkaId;
+        const userSettings = await prisma.user.getSettings(discordId);
+        if (!userSettings) throw new BaseError(`User is not registered`);
+        const userId = userSettings.litminkaId;
         if (!userId) throw new NoIntegrationError();
         return (await api.delete(`anime/follow/${animeId}`, {
             data: {
@@ -62,7 +69,9 @@ export class APIRequestService {
     }
 
     public static async GetSingleAnimeFullInfo(discordId: string, slug: string) {
-        const userId = (await prisma.user.getSettings(discordId)).litminkaId;
+        const userSettings = await prisma.user.getSettings(discordId);
+        if (!userSettings) throw new BaseError(`User is not registered`);
+        const userId = userSettings.litminkaId;
         if (!userId) throw new NoIntegrationError();
         return (await api.get(`anime/${slug}`, {
             data: {
