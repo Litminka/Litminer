@@ -1,9 +1,8 @@
 import { ButtonBuilder } from "discord.js";
-import BaseButtons from "../buttons/baseButtons";
-import PaginatedEmbed from "./paginatedEmbed";
+import BaseButtons from "../buttons/BaseButtons";
+import PaginatedEmbed from "./PaginatedEmbed";
 import { Anime, AnimeStatuses, FollowTypes, TranslationGroup } from "../../typings/anime";
-import { APIRequestService } from "../../services/apiRequestService";
-import BaseError from "../../errors/baseError";
+import { APIRequestService } from "../../services/APIRequestService";
 
 export default class AnimeSearchEmbed extends PaginatedEmbed {
 

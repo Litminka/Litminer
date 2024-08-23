@@ -1,5 +1,5 @@
-import BaseEmbeds from "../embeds/baseEmbeds";
-import { LitminerDebug } from "./litminerDebug";
+import BaseEmbeds from "../embeds/BaseEmbeds";
+import { LitminerDebug } from "./LitminerDebug";
 
 export function fillString(str: string, length: number, char: string = `ㅤ`) {
     let newstr = str;

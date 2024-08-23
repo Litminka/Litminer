@@ -1,9 +1,9 @@
 import { User } from "@prisma/client";
 import prisma from "../../db";
-import LitminkaEmbeds from "../../embeds/litminkaEmbeds";
+import LitminkaEmbeds from "../../embeds/LitminkaEmbeds";
 import { ExecuteOptions } from "../../typings/client";
-import { LitminerDebug } from "../../utils/litminerDebug";
-import BaseButtons from "../../embeds/buttons/baseButtons";
+import { LitminerDebug } from "../../utils/LitminerDebug";
+import BaseButtons from "../../embeds/buttons/BaseButtons";
 import { ActionRowBuilder, ButtonBuilder, ComponentType } from "discord.js";
 import { api } from "../../axios";
 

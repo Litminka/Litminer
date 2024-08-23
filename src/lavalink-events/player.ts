@@ -1,8 +1,8 @@
 import {  TextChannel } from "discord.js";
-import { BotClient } from "../structures/botClient";
-import MusicEmbeds from "../embeds/musicEmbeds";
-import ClientEmbeds from "../embeds/clientEmbeds";
-import { LitminerDebug } from "../utils/litminerDebug";
+import { BotClient } from "../structures/BotClient";
+import MusicEmbeds from "../embeds/MusicEmbeds";
+import ClientEmbeds from "../embeds/ClientEmbeds";
+import { LitminerDebug } from "../utils/LitminerDebug";
 
 
 export function PlayerEvents(client:BotClient) {

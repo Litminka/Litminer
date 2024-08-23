@@ -1,13 +1,11 @@
 import { ExecuteOptions } from "../../typings/client";
 import { Guild } from "@prisma/client";
 import prisma from "../../db";
-import LitminkaEmbeds from "../../embeds/litminkaEmbeds";
-import { LitminerDebug } from "../../utils/litminerDebug";
-import BaseButtons from "../../embeds/buttons/baseButtons";
+import LitminkaEmbeds from "../../embeds/LitminkaEmbeds";
+import { LitminerDebug } from "../../utils/LitminerDebug";
+import BaseButtons from "../../embeds/buttons/BaseButtons";
 import { ActionRowBuilder, ButtonBuilder, ChannelSelectMenuBuilder, ChannelType, ComponentType, GatewayIntentBits, PermissionsBitField } from "discord.js";
-import { api } from "../../axios";
-import BaseError from "../../errors/baseError";
-import NoPermissionError from "../../errors/interactionErrors/noPermissionError";
+import NoPermissionError from "../../errors/interaction/NoPermissionError";
 
 export async function SettingsGuildSubcommand({client, interaction}: ExecuteOptions) {
     if (!interaction.memberPermissions.has(PermissionsBitField.Flags.ManageGuild)) throw new NoPermissionError();

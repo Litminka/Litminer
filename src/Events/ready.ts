@@ -1,6 +1,6 @@
 import { ApplicationCommandDataResolvable, Events } from "discord.js";
 import { Event } from "../typings/client";
-import { LitminerDebug } from "../utils/litminerDebug";
+import { LitminerDebug } from "../utils/LitminerDebug";
 
 export default {
     name: Events.ClientReady,

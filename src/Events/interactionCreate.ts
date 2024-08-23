@@ -4,7 +4,7 @@ import { Command, SubCommand, Event } from "../typings/client";
 import {
     ChatInputCommandInteraction, CommandInteractionOptionResolver, Events, Interaction
 } from "discord.js";
-import { LitminerDebug } from "../utils/litminerDebug";
+import { LitminerDebug } from "../utils/LitminerDebug";
 
 export default {
     name: Events.InteractionCreate,

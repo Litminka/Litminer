@@ -1,8 +1,8 @@
 import { Command } from "../../typings/client";
-import AudioService from "../../services/audioService";
+import AudioService from "../../services/AudioService";
 import { CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
-import MusicEmbeds from "../../embeds/musicEmbeds";
-import QueueEmptyError from "../../errors/queueErrors/queueEmptyError";
+import MusicEmbeds from "../../embeds/MusicEmbeds";
+import QueueEmptyError from "../../errors/queue/QueueEmptyError";
 
 export default {
     data: new SlashCommandBuilder()

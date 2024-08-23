@@ -1,8 +1,8 @@
 import { Command } from "../../typings/client";
 import { SlashCommandBuilder } from "discord.js";
-import LitminkaEmbeds from "../../embeds/litminkaEmbeds";
-import WatchlistEmbed from "../../embeds/paginated/watchlistEmbed";
-import { APIRequestService } from "../../services/apiRequestService";
+import LitminkaEmbeds from "../../embeds/LitminkaEmbeds";
+import WatchlistEmbed from "../../embeds/paginated/WatchlistEmbed";
+import { APIRequestService } from "../../services/APIRequestService";
 
 export default {
     data: new SlashCommandBuilder()

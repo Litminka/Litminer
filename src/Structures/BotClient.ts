@@ -6,9 +6,9 @@ import { Command, SubCommand, Event } from "../typings/client";
 import { RedisClientType, createClient } from "redis";
 import { NodesEvents } from "../lavalink-events/nodes";
 import { PlayerEvents } from "../lavalink-events/player";
-import { myCustomStore, myCustomWatcher } from "../utils/customClasses";
-import { LitminerDebug } from "../utils/litminerDebug";
-import { requesterTransformer, autoPlayFunction } from "../utils/optionalFunctions";
+import { myCustomStore, myCustomWatcher } from "../utils/CustomClasses";
+import { LitminerDebug } from "../utils/LitminerDebug";
+import { requesterTransformer, autoPlayFunction } from "../utils/OptionalFunctions";
 
 
 const globPromise = promisify(glob);

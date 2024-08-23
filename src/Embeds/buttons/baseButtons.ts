@@ -1,8 +1,8 @@
 import { ButtonBuilder, ButtonStyle } from "discord.js";
 
-export default class BaseButtons{
+export default class BaseButtons {
 
-    public static Button(id: string, label?: string, emoji?: string): ButtonBuilder{
+    public static Button(id: string, label?: string, emoji?: string): ButtonBuilder {
         const button = new ButtonBuilder()
             .setCustomId(id);
 
@@ -15,11 +15,11 @@ export default class BaseButtons{
         return button;
     }
 
-    public static PrimaryButton(id: string, label?: string, emoji?: string): ButtonBuilder{
+    public static PrimaryButton(id: string, label?: string, emoji?: string): ButtonBuilder {
         return BaseButtons.Button(id, label, emoji).setStyle(ButtonStyle.Primary);
     }
 
-    public static SecondaryButton(id: string, label?: string, emoji?: string): ButtonBuilder{
+    public static SecondaryButton(id: string, label?: string, emoji?: string): ButtonBuilder {
         return BaseButtons.Button(id, label, emoji).setStyle(ButtonStyle.Secondary);
     }
 }

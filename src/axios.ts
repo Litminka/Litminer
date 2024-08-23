@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
-import BaseError from "./errors/baseError";
-import { LitminerDebug } from "./utils/litminerDebug";
-import NotFoundError from "./errors/apiErrors/notFoundError";
+import BaseError from "./errors/BaseError";
+import { LitminerDebug } from "./utils/LitminerDebug";
+import NotFoundError from "./errors/api/NotFoundError";
 
 enum UnauthorizedTypes {
     Unauthorized = 'unauthorized',

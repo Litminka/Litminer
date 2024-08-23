@@ -2,10 +2,10 @@
 import { GuildMember, User, VoiceChannel } from "discord.js";
 import { Player, EQBand, RepeatMode, EQList, PlayOptions, SearchQuery, SearchResult, UnresolvedSearchResult } from "lavalink-client";
 import { ExecuteOptions } from "../typings/client";
-import ChannelAccessError from "../errors/interactionErrors/channelAccessError";
-import ConnectionError from "../errors/interactionErrors/connectionError";
-import JoinVCError from "../errors/interactionErrors/joinVCError";
-import NotInVCError from "../errors/playerErrors/notInVCError";
+import ChannelAccessError from "../errors/interaction/ChannelAccessError";
+import ConnectionError from "../errors/interaction/ConnectionError";
+import JoinVCError from "../errors/interaction/JoinVCError";
+import NotInVCError from "../errors/player/NotInVCError";
 
 export const EQ = {
     "Clear": null,

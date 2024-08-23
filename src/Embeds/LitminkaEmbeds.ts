@@ -1,10 +1,9 @@
-import { EmbedBuilder, Colors, Embed } from "discord.js";
+import { EmbedBuilder, Colors } from "discord.js";
 import { client } from "../app";
-import { Anime, AnimeAnnouncement, GroupType, ShortAnime, WatchListWithAnime } from "../typings/anime";
+import { Anime, AnimeAnnouncement, GroupType, WatchListWithAnime } from "../typings/anime";
 import { ParseSeason, ParseMediaType } from "../utils/parsers";
-import BaseEmbeds from "./baseEmbeds";
+import BaseEmbeds from "./BaseEmbeds";
 import { Guild, User } from "@prisma/client";
-import { createFilledString } from "../utils/helpers";
 
 export default class LitminkaEmbeds {
     static animeStatus = {

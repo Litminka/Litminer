@@ -1,9 +1,9 @@
 import { CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
 import { formatMS_HHMMSS } from "../../utils/time";
 import { Command } from "../../typings/client";
-import AudioService, { SeekOptions } from "../../services/audioService";
-import BaseEmbeds from "../../embeds/baseEmbeds";
-import NotPlayingError from "../../errors/playerErrors/notPlayingError";
+import AudioService, { SeekOptions } from "../../services/AudioService";
+import BaseEmbeds from "../../embeds/BaseEmbeds";
+import NotPlayingError from "../../errors/player/NotPlayingError";
 
 export default {
     data: new SlashCommandBuilder()

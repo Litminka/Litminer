@@ -1,6 +1,6 @@
 import { Event } from "../../typings/client";
 import { ApplicationCommandDataResolvable, Events, Guild } from "discord.js";
-import { LitminerDebug } from "../../utils/litminerDebug";
+import { LitminerDebug } from "../../utils/LitminerDebug";
 import prisma from "../../db";
 export default {
     name: Events.GuildCreate,

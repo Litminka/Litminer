@@ -1,5 +1,5 @@
 import { CustomRequester } from "../typings/client";
-import { LitminerDebug } from "./litminerDebug";
+import { LitminerDebug } from "./LitminerDebug";
 
 export const requesterTransformer = (requester:any): CustomRequester => {
     // if it's already the transformed requester

@@ -1,8 +1,8 @@
 import { ExecuteOptions } from "../../typings/client";
-import LitminkaEmbeds from "../../embeds/litminkaEmbeds";
+import LitminkaEmbeds from "../../embeds/LitminkaEmbeds";
 import { CommandInteractionOptionResolver } from "discord.js";
-import { APIRequestService } from "../../services/apiRequestService";
-import AnimeSearchEmbed from "../../embeds/paginated/animeSearchEmbed";
+import { APIRequestService } from "../../services/APIRequestService";
+import AnimeSearchEmbed from "../../embeds/paginated/AnimeSearchEmbed";
 
 export async function AnimeSearchSubcommand({ client, interaction }: ExecuteOptions) {
     const name = (interaction.options as CommandInteractionOptionResolver).getString("name") as string;

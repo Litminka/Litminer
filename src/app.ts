@@ -2,9 +2,9 @@ require("dotenv").config();
 import { login } from "./axios";
 import express, { Express, Request, Response } from 'express';
 import bodyParser from "body-parser";
-import { BotClient } from "./structures/botClient";
+import { BotClient } from "./structures/BotClient";
 import { CustomEvents } from "./typings/client";
-import { LitminerDebug } from "./utils/litminerDebug";
+import { LitminerDebug } from "./utils/LitminerDebug";
 
 export const app: Express = express();
 app.use(bodyParser.json())

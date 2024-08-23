@@ -1,8 +1,8 @@
 import { EmbedBuilder, InteractionResponse, ComponentType, ButtonInteraction, ActionRowBuilder, ButtonBuilder } from "discord.js";
-import BaseButtons from "../buttons/baseButtons";
-import BaseError from "../../errors/baseError";
-import BaseEmbeds from "../baseEmbeds";
-import { LitminerDebug } from "../../utils/litminerDebug";
+import BaseButtons from "../buttons/BaseButtons";
+import BaseError from "../../errors/BaseError";
+import BaseEmbeds from "../BaseEmbeds";
+import { LitminerDebug } from "../../utils/LitminerDebug";
 
 type buttonCommands = Record<string, () => Promise<void>>;
 export type listCallback = (userId: string, page: number, pageLimit: number, ...params: unknown[]) => Promise<{
