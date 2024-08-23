@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import { Command } from "../../typings/Client";
+import { Command } from "../../typings/client";
 
 export default {
     data: new SlashCommandBuilder()

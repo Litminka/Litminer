@@ -1,5 +1,5 @@
 import { Events } from "discord.js";
-import { Event } from "../typings/Client";
+import { Event } from "../typings/client";
 
 export default {
     name: Events.Raw,

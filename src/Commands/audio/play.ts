@@ -1,14 +1,14 @@
 import { CommandInteractionOptionResolver, GuildMember, SlashCommandBuilder, VoiceChannel } from "discord.js";
-import { Command } from "../../typings/Client";
-import { formatMS_HHMMSS } from "../../utils/Time";
+import { Command } from "../../typings/client";
+import { formatMS_HHMMSS } from "../../utils/time";
 import { SearchPlatform, SearchResult, Track } from "lavalink-client";
-import AudioService from "../../services/AudioService";
-import AutocompleteService from "../../services/AutocompleteService";
-import MusicEmbeds from "../../embeds/MusicEmbeds";
-import JoinVCError from "../../errors/interactionErrors/JoinVCError";
-import ChannelAccessError from "../../errors/interactionErrors/ChannelAccessError";
-import NoTracksError from "../../errors/searchErrors/NoTracksError";
-import NotInVCError from "../../errors/playerErrors/NotInVCError";
+import AudioService from "../../services/audioService";
+import AutocompleteService from "../../services/autocompleteService";
+import MusicEmbeds from "../../embeds/musicEmbeds";
+import JoinVCError from "../../errors/interactionErrors/joinVCError";
+import ChannelAccessError from "../../errors/interactionErrors/channelAccessError";
+import NoTracksError from "../../errors/searchErrors/noTracksError";
+import NotInVCError from "../../errors/playerErrors/notInVCError";
 
 
 
@@ -80,8 +80,8 @@ export default {
             ]
         });
         // #endregion
-        //const playOptions = player.connected ? { volume: client.defaultVolume, paused: false } : undefined
-        if (!player.playing) await AudioService.play(player, { volume: client.defaultVolume, paused: false });
+        const playOptions = player.connected ? { volume: client.defaultVolume, paused: false } : undefined
+        if (!player.playing) await AudioService.play(player, playOptions);
     },
     autocomplete: async ({ client, interaction }) => {
         // #region Validation

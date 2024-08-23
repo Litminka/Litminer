@@ -1,8 +1,7 @@
 import { MiniMap, QueueChangesWatcher, QueueStoreManager, StoredQueue } from "lavalink-client";
 import { RedisClientType } from "redis";
-import { BotClient } from "../structures/BotClient";
-
-
+import { BotClient } from "../structures/botClient";
+import { LitminerDebug } from "./litminerDebug";
 
 export class myCustomStore implements QueueStoreManager {
     private redis:RedisClientType|MiniMap<string, string>;
@@ -42,12 +41,12 @@ export class myCustomWatcher implements QueueChangesWatcher {
         this.client = client;
     }
     shuffled(guildId, oldStoredQueue, newStoredQueue) {
-        console.log(`${this.client.guilds.cache.get(guildId)?.name || guildId}: Queue got shuffled`)    
+        LitminerDebug.Debug(`${this.client.guilds.cache.get(guildId)?.name || guildId}: Queue got shuffled`)    
     }
     tracksAdd(guildId, tracks, position, oldStoredQueue, newStoredQueue) {
-        console.log(`${this.client.guilds.cache.get(guildId)?.name || guildId}: ${tracks.length} Tracks got added into the Queue at position #${position}`);    
+        LitminerDebug.Debug(`${this.client.guilds.cache.get(guildId)?.name || guildId}: ${tracks.length} Tracks got added into the Queue at position #${position}`);    
     }
     tracksRemoved(guildId, tracks, position, oldStoredQueue, newStoredQueue) {
-        console.log(`${this.client.guilds.cache.get(guildId)?.name || guildId}: ${tracks.length} Tracks got removed from the Queue at position #${position}`);
+        LitminerDebug.Debug(`${this.client.guilds.cache.get(guildId)?.name || guildId}: ${tracks.length} Tracks got removed from the Queue at position #${position}`);
     }
 }

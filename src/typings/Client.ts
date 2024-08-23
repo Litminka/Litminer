@@ -1,10 +1,6 @@
-import {
-	AutocompleteInteraction, ChatInputCommandInteraction, Client, SlashCommandBuilder,
-	SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder,
-	SlashCommandSubcommandsOnlyBuilder
-} from "discord.js";
-import { BotClient } from "../structures/BotClient";
-import { Track, UnresolvedTrack } from "lavalink-client";
+import { ChatInputCommandInteraction, AutocompleteInteraction, SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder } from "discord.js";
+import { Track, UnresolvedTrack } from "lavalink-client/dist/types";
+import { BotClient } from "../structures/botClient";
 
 export interface ExecuteOptions {
     client: BotClient;
@@ -16,7 +12,7 @@ interface AutocompleteOptions {
     interaction: AutocompleteInteraction;
 }
 
-type ExecuteFunction = (options: ExecuteOptions) => any; 
+type ExecuteFunction = (options: ExecuteOptions) => any;
 type AutocompleteFunction = (options: AutocompleteOptions) => any;
 
 export interface Command {
@@ -31,8 +27,8 @@ export interface CustomRequester {
     avatar?: string,
 }
 
-type subCommandExecute = { [subCommandName:string]: ExecuteFunction };
-type subCommandAutocomplete = { [subCommandName:string]: AutocompleteFunction };
+type subCommandExecute = { [subCommandName: string]: ExecuteFunction };
+type subCommandAutocomplete = { [subCommandName: string]: AutocompleteFunction };
 export interface SubCommand {
     data: SlashCommandSubcommandBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandsOnlyBuilder;
     execute: subCommandExecute;
@@ -41,11 +37,16 @@ export interface SubCommand {
 
 export interface Event {
     name: string,
-    execute: (client:BotClient, ...params:any) => any;
+    execute: (client: BotClient, ...params: any) => any;
 }
 
-export interface EmbededTrack{
+export interface EmbededTrack {
     track: Track | UnresolvedTrack,
     isCurrent: boolean,
     position: number
 }
+
+export enum CustomEvents {
+    Announcement = "announcement",
+}
+

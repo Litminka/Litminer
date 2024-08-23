@@ -1,7 +1,8 @@
 import {  TextChannel } from "discord.js";
-import { BotClient } from "../structures/BotClient";
-import MusicEmbeds from "../embeds/MusicEmbeds";
-import ClientEmbeds from "../embeds/ClientEmbeds";
+import { BotClient } from "../structures/botClient";
+import MusicEmbeds from "../embeds/musicEmbeds";
+import ClientEmbeds from "../embeds/clientEmbeds";
+import { LitminerDebug } from "../utils/litminerDebug";
 
 
 export function PlayerEvents(client:BotClient) {
@@ -9,29 +10,29 @@ export function PlayerEvents(client:BotClient) {
      * PLAYER EVENTS
      */
     client.lavalink.on("playerCreate", (player) => {
-        console.log(player.guildId, " :: Created a Player :: ");
+        LitminerDebug.Success(`${player.guildId} Created a Player`);
     }).on("playerDestroy", (player, reason) => {
-        console.log(player.guildId, " :: Player got Destroyed :: ");
+        LitminerDebug.Warning(`${player.guildId} Player got Destroyed`);
         const channel = client.channels.cache.get(player.textChannelId!) as TextChannel;
-        if(!channel) return console.log("No Channel?", player);
+        if(!channel) return LitminerDebug.Error(`No Channel? ${player}`);
         channel.send({
             embeds: [
                 ClientEmbeds.PlayerDestroyed(reason)
             ]
         })
     }).on("playerDisconnect", (player, voiceChannelId) => {
-        console.log(player.guildId, " :: Player disconnected the Voice Channel :: ", voiceChannelId);
+        LitminerDebug.Success(`${player.guildId} Player disconnected the Voice Channel, Old VCID - ${voiceChannelId}`);
     }).on("playerMove", (player, oldVoiceChannelId, newVoiceChannelId) => {
-        console.log(player.guildId, " :: Player moved from Voice Channel :: ", oldVoiceChannelId, " :: To ::", newVoiceChannelId);
+        LitminerDebug.Warning(`${player.guildId} Player moved from Voice Channel ${oldVoiceChannelId} to ${newVoiceChannelId}`);
     }).on("playerSocketClosed", (player, payload) => {
-        console.log(player.guildId, " :: Player socket got closed from lavalink :: ", payload);
+        LitminerDebug.Success(`${player.guildId} Player socket got closed from lavalink, Payload - ${payload}`);
     })
 
     /**
      * Queue/Track Events
      */
     client.lavalink.on("trackStart", (player, track) => {
-        console.log(player.guildId, " :: Started Playing :: ", track.info.title, "QUEUE:", player.queue.tracks.map(v => v.info.title));
+        LitminerDebug.Info(`${player.guildId} Started playing ${track.info.title}, Queue: ${player.queue.tracks.map(v => v.info.title)}`);
         const channel = client.channels.cache.get(player.textChannelId!) as TextChannel;
         if(!channel) return;
         channel.send({
@@ -40,14 +41,14 @@ export function PlayerEvents(client:BotClient) {
             ]
         })
     }).on("trackEnd", (player, track, payload) => {
-        console.log(player.guildId, " :: Finished Playing :: ", track.info.title)
+        LitminerDebug.Success(`${player.guildId} Finished playing ${track.info.title}`)
     }).on("trackError", (player, track, payload) => {
-        console.log(player.guildId, " :: Errored while Playing :: ", track?.info?.title, " :: ERROR DATA :: ", payload)
+        LitminerDebug.Error(`${player.guildId} Errored while Playing ${track?.info?.title}, Data - ${JSON.stringify(payload)}`)
     }).on("trackStuck", (player, track, payload) => {
-        console.log(player.guildId, " :: Got Stuck while Playing :: ", track?.info?.title, " :: STUCKED DATA :: ", payload)
+        LitminerDebug.Warning(`${player.guildId} Got Stuck while Playing ${track?.info?.title}, Data - ${JSON.stringify(payload)}`)
         
     }).on("queueEnd", (player, track, payload) => {
-        console.log(player.guildId, " :: No more tracks in the queue, after playing :: ", track?.info?.title || track)
+        LitminerDebug.Warning(`${player.guildId} No more tracks in the queue, after playing ${track?.info?.title || track}`)
         const channel = client.channels.cache.get(player.textChannelId!) as TextChannel;
         if(!channel) return;
         channel.send({

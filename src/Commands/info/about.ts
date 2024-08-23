@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
-import { Command } from "../../typings/Client";
-import ClientEmbeds from "../../embeds/ClientEmbeds";
+import { Command } from "../../typings/client";
+import ClientEmbeds from "../../embeds/clientEmbeds";
 
 export default {
     data: new SlashCommandBuilder()

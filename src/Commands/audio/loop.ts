@@ -1,9 +1,9 @@
 import { CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
-import { Command } from "../../typings/Client";
+import { Command } from "../../typings/client";
 import { RepeatMode } from "lavalink-client/dist/types";
-import AudioService from "../../services/AudioService";
-import BaseEmbeds from "../../embeds/BaseEmbeds";
-import NotPlayingError from "../../errors/playerErrors/NotPlayingError";
+import AudioService from "../../services/audioService";
+import BaseEmbeds from "../../embeds/baseEmbeds";
+import NotPlayingError from "../../errors/playerErrors/notPlayingError";
 
 export default {
     data: new SlashCommandBuilder()

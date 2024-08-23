@@ -12,3 +12,22 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id                 Int                   @id @default(autoincrement())
+  icon               String?               
+  discordId          String                @unique
+  litminkaId         String                @unique
+  username           String                @default("")
+  isNotifiable       Boolean               @default(false)
+}
+
+model Guild {
+  id                 Int                   @id @default(autoincrement())
+  icon               String?               
+  guildId            String                @unique
+  name               String                @default("")
+  isNotifiable       Boolean               @default(false)
+  notifyChannelId    String?                    
+
+}

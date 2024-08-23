@@ -1,9 +1,10 @@
 import { Colors, EmbedBuilder } from "discord.js";
-import { PlaylistInfo, Track } from "lavalink-client";
-import { formatMS_HHMMSS } from "../utils/Time";
-import { CustomRequester, EmbededTrack } from "../typings/Client";
-import BaseEmbeds, { EmbedQueue } from "./BaseEmbeds";
-import QueueEmptyError from "../errors/queueErrors/QueueEmptyError";
+import { Track, PlaylistInfo, Player, Queue } from "lavalink-client/dist/types";
+import QueueEmptyError from "../errors/queueErrors/queueEmptyError";
+import { CustomRequester, EmbededTrack } from "../typings/client";
+import { formatMS_HHMMSS } from "../utils/time";
+import BaseEmbeds from "./baseEmbeds";
+import { createFilledString } from "../utils/helpers";
 
 export default class MusicEmbeds {
     static replacements = {
@@ -11,89 +12,147 @@ export default class MusicEmbeds {
         ']': ')'
     }
 
-    public static TrackStarted(track: Track): EmbedBuilder{
-        const embed = BaseEmbeds.TimestampEmbed(Colors.Blurple, `🎶 ${track.info.title}`.substring(0, 256))
-        .setDescription(
-            [
-                `- **Author:** ${track.info.author}`,
-                `- **Duration:** ${formatMS_HHMMSS(track.info.duration)} | Ends <t:${Math.floor((Date.now() + track.info.duration) / 1000)}:R>`,
-                `- **Source:** ${track.info.sourceName}`,
-                `- **Requester:** <@${(track.requester as CustomRequester).id}>`,
-                track.pluginInfo?.clientData?.fromAutoplay ? `> *From Autoplay* ✅` : undefined
-            ].filter(v => typeof v === "string" && v.length).join("\n").substring(0, 4096)
-        )
-        .setImage(track.info.artworkUrl || track.pluginInfo?.artworkUrl || null)
-        .setFooter({
-            text: `Requested by ${(track.requester as CustomRequester)?.username}`,
-            iconURL: (track?.requester as CustomRequester)?.avatar || undefined
-        })
+    public static TrackStarted(track: Track): EmbedBuilder {
+        const embed = BaseEmbeds.Audio(`${track.info.title}`.substring(0, 256))
+            .setDescription(
+                [
+                    `- **Author:** ${track.info.author}`,
+                    `- **Duration:** ${formatMS_HHMMSS(track.info.duration)} | Ends <t:${Math.floor((Date.now() + track.info.duration) / 1000)}:R>`,
+                    `- **Source:** ${track.info.sourceName}`,
+                    `- **Requester:** <@${(track.requester as CustomRequester).id}>`,
+                    track.pluginInfo?.clientData?.fromAutoplay ? `> *From Autoplay* ✅` : undefined
+                ].filter(v => typeof v === "string" && v.length).join("\n").substring(0, 4096)
+            )
+            .setImage(track.info.artworkUrl || track.pluginInfo?.artworkUrl || null)
+            .setFooter({
+                text: `Requested by ${(track.requester as CustomRequester)?.username}`,
+                iconURL: (track?.requester as CustomRequester)?.avatar || undefined
+            })
         // local tracks are invalid uris
-        if(/^https?:\/\//.test(track.info.uri)) embed.setURL(track.info.uri);
+        if (/^https?:\/\//.test(track.info.uri)) embed.setURL(track.info.uri);
 
         return embed;
     }
 
-    public static TrackPaused(track: Track, pauseTime: string) : EmbedBuilder{
+    public static TrackPaused(track: Track, pauseTime: string): EmbedBuilder {
         return BaseEmbeds.Info(`${track.info.title} paused at ${pauseTime}`);
     }
 
-    public static TrackSkipped(oldTrack: Track, newTrack: Track) : EmbedBuilder{
+    public static TrackSkipped(oldTrack: Track, newTrack: Track): EmbedBuilder {
         return BaseEmbeds.Info(`Skipping [\`${oldTrack.info.title}\`] to [\`${newTrack.info.title}\`]`);
     }
 
-    public static TrackAdded(track: Track, position: number): EmbedBuilder{
+    public static TrackAdded(track: Track, position: number): EmbedBuilder {
         const embed = BaseEmbeds.Success(`Added ${track.info.title}`)
-        .setDescription(
-            [
-                `- **Author:** ${track.info.author}`,
-                `- **URL:** ${track.info.uri}`,
-                `- **Queue position:** ${position}`
-            ].filter(v => typeof v === "string" && v.length).join("\n").substring(0, 4096)
-        )
-        .setImage(track.info.artworkUrl || track.pluginInfo?.artworkUrl || null)
+            .setDescription(
+                [
+                    `- **Author:** ${track.info.author}`,
+                    `- **URL:** ${track.info.uri}`,
+                    `- **Queue position:** ${position}`
+                ].filter(v => typeof v === "string" && v.length).join("\n").substring(0, 4096)
+            )
+            .setImage(track.info.artworkUrl || track.pluginInfo?.artworkUrl || null)
 
         return embed;
     }
 
-    public static PlaylistAdded(playlist: PlaylistInfo, tracks: Track[], lastQueuePosition: number): EmbedBuilder{
-        console.log(playlist);
+    public static PlaylistAdded(playlist: PlaylistInfo, tracks: Track[], lastQueuePosition: number): EmbedBuilder {
         const embed = BaseEmbeds.Success(`Added ${playlist.title} playlist`)
-        .setDescription(
-            [
-                `- **Queue position:** ${lastQueuePosition - tracks.length}`,
-                playlist.uri ? `**URL:** ${playlist.uri}` : undefined,
-            ].filter(v => typeof v === "string" && v.length).join("\n").substring(0, 4096)
-        )
-        .setImage(playlist.thumbnail)
+            .setDescription(
+                [
+                    `- **Queue position:** ${lastQueuePosition - tracks.length}`,
+                    playlist.uri ? `**URL:** ${playlist.uri}` : undefined,
+                ].filter(v => typeof v === "string" && v.length).join("\n").substring(0, 4096)
+            )
+            .setImage(playlist.thumbnail)
 
         return embed;
     }
 
-    public static QueueEnded(): EmbedBuilder{
+    public static QueueEnded(): EmbedBuilder {
         return BaseEmbeds.Error("Queue Ended");
     }
 
-    public static PrintQueue(queue: EmbedQueue): EmbedBuilder{
-        console.log(queue);
-        
-        const minIndex = queue.currentIndex >= 5 ? queue.currentIndex - 5 : 0;
-        const maxIndex = queue.currentIndex <= queue.tracks.length - 5 ? queue.currentIndex + 5 : queue.tracks.length;
-        const printQueue = queue.tracks.slice(minIndex, maxIndex);
-        if (printQueue === undefined) throw new QueueEmptyError();
-        const embed = BaseEmbeds.Info("Queue");
-        for (let embedTrack of printQueue){
-            const title = embedTrack.track.info.title.replace(/[\[\]]/g, c => this.replacements[c]);
-            const trackAuthor = embedTrack.track.info.author;
-            let trackTitle = `\`\`\`\n ${title} \`\`\``;
-            if (embedTrack.isCurrent) trackTitle = `\`\`\`css\n [${title}] \`\`\``;
-            embed.addFields([
-                {
-                    name: `**${embedTrack.position}. ${trackAuthor != undefined ? trackAuthor : `\u200B`}**`, 
-                    //value: `\`\`\`css\n ${embedTrack.position}: ${trackTitle} \`\`\``
-                    value: `${trackTitle}`
-                }
-            ]);
+    public static ShowMusicQueue(tracks: EmbededTrack[]): EmbedBuilder[] {
+        if (!tracks) throw new QueueEmptyError();
+        const embeds = [];
+        for (let track of tracks) {
+            embeds.push(MusicEmbeds.TrackInfo(track));
         }
+        return embeds;
+    }
+
+    public static TrackInfo(embededTrack: EmbededTrack) {
+        //let title = createFilledString(embededTrack.track.info.title.replace(/[\[\]]/g, c => this.replacements[c]));
+        const title = embededTrack.track.info.title.replace(/[\[\]]/g, c => this.replacements[c]);
+        const trackAuthor = embededTrack.track.info.author;
+        const requester = embededTrack.track.requester as CustomRequester;
+        
+        const embed = BaseEmbeds.Audio(title)
+            .addFields([
+                {
+                    name: `**Автор**`,
+                    value: trackAuthor,
+                    inline: true
+                },
+                {
+                    name: `**Длительность**`,
+                    value: `${formatMS_HHMMSS(embededTrack.track.info.duration)}`,
+                    inline: true
+                },
+                {
+                    name: `**Источник**`,
+                    value: `${embededTrack.track.info.sourceName}`,
+                    inline: true
+                }
+            ])
+            .setFooter({
+                text: `Запрошено ${(requester?.username)}`,
+                iconURL: requester?.avatar || undefined
+            });
+        if (/^https?:\/\//.test(embededTrack.track.info.artworkUrl)) embed.setThumbnail(embededTrack.track.info.artworkUrl);
+        if (/^https?:\/\//.test(embededTrack.track.info.uri)) embed.setURL(embededTrack.track.info.uri);
+        if (embededTrack.isCurrent) embed.setColor(Colors.LuminousVividPink).setDescription(`## Текущий трек`);
         return embed;
+    }
+
+    public static Current(player: Player) {
+        const track = player.queue.current;
+        const duration = track.info.duration;
+        const position = player.position;
+        const embed = BaseEmbeds.Audio(`${track.info.title}`.substring(0, 256))
+            .setAuthor({ name: track.info.author })
+            .setImage(track.info.artworkUrl)
+            .addFields([
+                {
+                    name: `**Requester**`,
+                    value: `<@${(track.requester as CustomRequester).id}>`,
+                    inline: true
+                },
+                {
+                    name: `**Progress**`,
+                    value: `${formatMS_HHMMSS(position)} / ${formatMS_HHMMSS(duration)}`,
+                    inline: true
+                }
+            ])
+        if (/^https?:\/\//.test(track.info.uri)) embed.setURL(track.info.uri);
+        return embed;
+    }
+}
+
+
+export class EmbedQueue {
+    tracks: EmbededTrack[];
+
+    constructor(queue: Queue) {
+        this.tracks = [...queue.previous, queue.current, ...queue.tracks].map((track, i) => { return { track, isCurrent: queue.current === track, position: i + 1 } });
+    }
+
+    public async GetTracks(userId: string, page: number, pageLimit: number = 10) {
+        const currentIndex = (page - 1) * pageLimit;
+        return {
+            list: this.tracks.slice(currentIndex, currentIndex + pageLimit),
+            count: this.tracks.length
+        }
     }
 }

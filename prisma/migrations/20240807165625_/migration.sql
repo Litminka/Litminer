@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "UserLink" ALTER COLUMN "discordId" SET DATA TYPE TEXT,
+ALTER COLUMN "litminkaId" SET DATA TYPE TEXT;
