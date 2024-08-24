@@ -8,7 +8,7 @@ import { LitminerDebug } from "./utils/LitminerDebug";
 
 export const app: Express = express();
 app.use(bodyParser.json())
-app.post('/', (req: Request, res: Response) => {
+app.post('/notify', (req: Request, res: Response) => {
     client.emit(CustomEvents.Announcement, req.body);
     res.send(`[LitminerV2] POST request successful`);
 })
