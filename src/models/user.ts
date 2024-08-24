@@ -13,18 +13,16 @@ const extention = Prisma.defineExtension({
                         discordId: id,
                         litminkaId,
                         username,
-                        isNotifiable: false,
                         icon: avatar
                     }
                 })
             },
-            async findNotifiable(litminkaIds: number[]) {
+            async findUsersByLitminkaIds(litminkaIds: number[]) {
                 return await prisma.user.findMany({
                     where: {
                         litminkaId: {
                             in: litminkaIds.map(id => `${id}`)
-                        },
-                        isNotifiable: true
+                        }
                     }
                 });
             },
@@ -51,18 +49,6 @@ const extention = Prisma.defineExtension({
                     }
                 });
             },
-
-            async updateSettings(user: User) {
-                const { id, isNotifiable } = user;
-                return await prisma.user.update({
-                    where: {
-                        id
-                    },
-                    data: {
-                        isNotifiable
-                    }
-                });
-            }
         }
     }
 });

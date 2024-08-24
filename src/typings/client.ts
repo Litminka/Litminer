@@ -37,7 +37,7 @@ export interface SubCommand {
 
 export interface Event {
     name: string,
-    execute: (client: BotClient, ...params: any) => any;
+    execute: (client: BotClient, ...params: unknown[]) => unknown;
 }
 
 export interface EmbededTrack {

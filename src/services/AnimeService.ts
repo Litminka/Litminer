@@ -29,7 +29,7 @@ export default class AnimeService {
     }
 
     public static async NotifyUsers(announcement: AnimeAnnouncement){
-        const users = await prisma.user.findNotifiable(announcement.userIds);
+        const users = await prisma.user.findUsersByLitminkaIds(announcement.userIds);
         if (users.length == 0) LitminerDebug.Warning(`No users to notify`);
         for (const user of users) {
             const discordUser = await client.users.fetch(user.discordId);

@@ -19,7 +19,6 @@ model User {
   discordId          String                @unique
   litminkaId         String                @unique
   username           String                @default("")
-  isNotifiable       Boolean               @default(false)
 }
 
 model Guild {

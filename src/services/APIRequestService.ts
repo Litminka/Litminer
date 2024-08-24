@@ -3,7 +3,7 @@ import prisma from "../db";
 import NoIntegrationError from "../errors/api/NoIntegrationError";
 import NotFoundError from "../errors/api/NotFoundError";
 import BaseError from "../errors/BaseError";
-import { Anime, FollowTypes } from "../typings/anime";
+import { Anime, FollowTypes, Settings, User } from "../typings/anime";
 
 export class APIRequestService {
 
@@ -77,5 +77,29 @@ export class APIRequestService {
                 userId
             }
         })).data.body as Anime;
+    }
+
+    public static async GetUser(discordId: string) {
+        const userSettings = await prisma.user.getSettings(discordId);
+        if (!userSettings) throw new BaseError(`User is not registered`);
+        const userId = userSettings.litminkaId;
+        if (!userId) throw new NoIntegrationError();
+        return (await api.get(`users/profile`, {
+            data:{
+                userId: userSettings.litminkaId
+            }
+        })).data.body as User;
+    }
+
+    public static async UpdateUserSettings(discordId: string, settings: Settings){
+        const userSettings = await prisma.user.getSettings(discordId);
+        if (!userSettings) throw new BaseError(`User is not registered`);
+        const userId = userSettings.litminkaId;
+        if (!userId) throw new NoIntegrationError();
+        const { notifyDiscord } = settings;
+        await api.patch(`users/settings`, {
+            userId: userSettings.litminkaId,
+            notifyDiscord
+        })
     }
 }

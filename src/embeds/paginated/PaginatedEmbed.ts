@@ -111,9 +111,9 @@ export default class PaginatedEmbed {
                     components: [this.getActionRow()]
                 });
             } catch(error){
-                LitminerDebug.Error(error.message);
+                LitminerDebug.Error(error.stack);
                 return await response.edit({
-                    embeds: [BaseEmbeds.Error(error)],
+                    embeds: [BaseEmbeds.Error(error.message)],
                     components: []
                 })
             }

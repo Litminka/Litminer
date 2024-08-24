@@ -1,9 +1,9 @@
 import { EmbedBuilder, Colors } from "discord.js";
 import { client } from "../app";
-import { Anime, AnimeAnnouncement, GroupType, WatchListWithAnime } from "../typings/anime";
+import { Anime, AnimeAnnouncement, GroupType, User, WatchListWithAnime } from "../typings/anime";
 import { ParseSeason, ParseMediaType } from "../utils/parsers";
 import BaseEmbeds from "./BaseEmbeds";
-import { Guild, User } from "@prisma/client";
+import { Guild } from "@prisma/client";
 
 export default class LitminkaEmbeds {
     static animeStatus = {
@@ -19,23 +19,20 @@ export default class LitminkaEmbeds {
     }
 
     public static async UserProfile(user: User): Promise<EmbedBuilder> {
+        const discordUser = await client.users.fetch(`${user.integration.discordId}`);
         const embed = BaseEmbeds.Info("Информация о пользователе")
             .addFields([
                 {
                     name: "**Имя**",
-                    value: user.username,
+                    value: discordUser.username,
                     inline: true
                 },
                 {
                     name: `**Уведомлять о новых сериях**`,
-                    value: user.isNotifiable ? `Да` : `Нет`
-                },
-                {
-                    name: `**Интеграция с Litminka.ru**`,
-                    value: user.litminkaId ? `Есть (Id: ${user.litminkaId})` : `Отсутствует`
+                    value: user.settings.notifyDiscord ? `Да` : `Нет`
                 }
             ])
-            .setThumbnail((await client.users.fetch(user.discordId)).avatarURL())
+            .setThumbnail(discordUser.avatarURL())
 
         return embed;
     }
@@ -115,10 +112,9 @@ export default class LitminkaEmbeds {
         }
         return embeds;
     }
-    public static AnimeShortInfo(anime: Anime): any {
+    public static AnimeShortInfo(anime: Anime): EmbedBuilder {
         const animeURL = `https://litminka.ru/anime/${anime.slug}`;
         
-        //let title = createFilledString(anime.name);
         const embed = BaseEmbeds.Anime(`${anime.name}`)
             .addFields([
                 {
