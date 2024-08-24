@@ -1,31 +1,31 @@
 export class LitminerDebug {
-    static Log(message: any, color: DebugColor) {
+    static Log(message: string, color: DebugColor) {
         if (!process.env.DEBUG) return;
 
         console.log(`[LitminerV2] \u001b[${color}m${message}\u001b[0m`)
     }
 
-    public static Error(message: any) {
+    public static Error(message: string) {
         LitminerDebug.Log(`[ERROR] ${message}`, DebugColor.Red);
     }
 
-    public static Info(message: any) {
+    public static Info(message: string) {
         LitminerDebug.Log(`[INFO] ${message}`, DebugColor.Cyan);
     }
 
-    public static Warning(message: any) {
+    public static Warning(message: string) {
         LitminerDebug.Log(`[WARNING] ${message}`, DebugColor.Yellow);
     }
 
-    public static Special(message: any) {
+    public static Special(message: string) {
         LitminerDebug.Log(`[SPECIAL] ${message}`, DebugColor.Purple);
     }
 
-    public static Debug(message: any) {
+    public static Debug(message: string) {
         LitminerDebug.Log(`[DEBUG] ${message}`, DebugColor.White);
     }
 
-    public static Success(message: any) {
+    public static Success(message: string) {
         LitminerDebug.Log(`[SUCCESS] ${message}`, DebugColor.Green);
     }
 }
