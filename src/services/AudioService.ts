@@ -1,11 +1,12 @@
 
 import { GuildMember, User, VoiceChannel } from "discord.js";
-import { Player, EQBand, RepeatMode, EQList, PlayOptions, SearchQuery, SearchResult, UnresolvedSearchResult } from "lavalink-client";
+import { Player, EQBand, RepeatMode, EQList, PlayOptions, SearchQuery, SearchResult, UnresolvedSearchResult, Queue, StoredQueue, Track, QueueSaver } from "lavalink-client";
 import { ExecuteOptions } from "../typings/client";
 import ChannelAccessError from "../errors/interaction/ChannelAccessError";
 import ConnectionError from "../errors/interaction/ConnectionError";
 import JoinVCError from "../errors/interaction/JoinVCError";
 import NotInVCError from "../errors/player/NotInVCError";
+import { LitminerDebug } from "../utils/LitminerDebug";
 
 export const EQ = {
     "Clear": null,
@@ -47,6 +48,21 @@ export default class AudioService {
     }
 
     public static async skip(player: Player, shouldSkip: number) {
+        if (shouldSkip < 0) {
+            let previousTracks: Track[] = [];
+            let newCurrent: Track;
+            for (let i = 0; i < -shouldSkip; i++) {
+                previousTracks.push(await player.queue.shiftPrevious())
+            }
+            newCurrent = previousTracks.pop();
+            player.queue = new Queue(player.guildId, {
+                current: newCurrent,
+                previous: player.queue.previous,
+                tracks: [...previousTracks.reverse(), player.queue.current, ...player.queue.tracks as Track[]]
+            }, new QueueSaver(player.LavalinkManager.options.queueOptions), player.LavalinkManager.options.queueOptions);
+
+            return await AudioService.play(player, { clientTrack: newCurrent });
+        }
         await player.skip(shouldSkip);
     }
 
