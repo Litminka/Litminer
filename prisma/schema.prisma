@@ -14,19 +14,44 @@ datasource db {
 }
 
 model User {
-  id                 Int                   @id @default(autoincrement())
-  icon               String?               
-  discordId          String                @unique
-  litminkaId         String                @unique
-  username           String                @default("")
+  id         Int     @id @default(autoincrement())
+  icon       String?
+  discordId  String  @unique
+  litminkaId String  @unique
+  username   String  @default("")
+
+  playlist Playlist[]
 }
 
 model Guild {
-  id                 Int                   @id @default(autoincrement())
-  icon               String?               
-  guildId            String                @unique
-  name               String                @default("")
-  isNotifiable       Boolean               @default(false)
-  notifyChannelId    String?                    
+  id              Int     @id @default(autoincrement())
+  icon            String?
+  guildId         String  @unique
+  name            String  @default("")
+  isNotifiable    Boolean @default(false)
+  notifyChannelId String?
 
+  playlist Playlist[]
+}
+
+model Playlist {
+  id      Int     @id @default(autoincrement())
+  name    String  @default("Playlist")
+  userId  Int
+  guildId Int?
+  tracks  Track[]
+
+  user  User   @relation(fields: [userId], references: [id])
+  guild Guild? @relation(fields: [guildId], references: [id])
+}
+
+model Track {
+  id       Int    @id @default(autoincrement())
+  url      String @unique
+  name     String
+  duration Int
+  author   String
+  source   String
+
+  playlist Playlist[]
 }
