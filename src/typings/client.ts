@@ -7,7 +7,7 @@ export interface ExecuteOptions {
     interaction: ChatInputCommandInteraction<"cached">;
 }
 
-interface AutocompleteOptions {
+export interface AutocompleteOptions {
     client: BotClient;
     interaction: AutocompleteInteraction;
 }

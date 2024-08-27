@@ -42,13 +42,10 @@ export class BotClient extends Client {
                 port: Number(process.env.REDIS_PORT)
             }
         });
-        this.redis.connect();
-        //this.redis.on("error", (err) => console.log('Redis Client Error', err));
+        this.redis.connect().catch(error => LitminerDebug.Error(error.message));
 
         this.LoadLavalink();
-
         this.RegisterModules();
-
         this.login(process.env.DISCORD_BOT_TOKEN);
     }
 
@@ -60,25 +57,24 @@ export class BotClient extends Client {
                     host: "localhost",
                     port: 2333,
                     id: "litminer_v2",
-                    // sessionId: "lsvunq8h8bxx0m9w", // add the sessionId in order to resume the session for the node, and then to recover the players listen to nodeManager#resumed.
                     requestSignalTimeoutMS: 3000,
                 }
             ],
             sendToShard: (guildId, payload) => this.guilds.cache.get(guildId)?.shard?.send(payload),
             autoSkip: true,
-            client: { // client: client.user
-                id: process.env.DISCORD_BOT_ID, // REQUIRED! (at least after the .init)
+            client: { 
+                id: process.env.DISCORD_BOT_ID, 
                 username: "LitminerV2-Testing"
             },
             playerOptions: {
                 applyVolumeAsFilter: false,
-                clientBasedPositionUpdateInterval: 50, // in ms to up-calc player.position
+                clientBasedPositionUpdateInterval: 50, 
                 defaultSearchPlatform: "ytmsearch",
                 volumeDecrementer: 0.75, // on client 100% == on lavalink 75%
                 requesterTransformer: requesterTransformer,
                 onDisconnect: {
-                    autoReconnect: false, // automatically attempts a reconnect, if the bot disconnects from the voice channel, if it fails, it get's destroyed
-                    destroyPlayer: true // overrides autoReconnect and directly destroys the player if the bot disconnects from the vc
+                    autoReconnect: false, 
+                    destroyPlayer: true
                 },
                 onEmptyQueue: {
                     destroyAfterMs: 1000, // 0 === instantly destroy | don't provide the option, to don't destroy the player
@@ -95,7 +91,7 @@ export class BotClient extends Client {
             linksWhitelist: [],
             advancedOptions: {
                 debugOptions: {
-                    noAudio: false,
+                    noAudio: true,
                     playerDestroy: {
                         dontThrowError: false,
                         debugLog: false
