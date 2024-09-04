@@ -14,8 +14,6 @@ declare global {
             DATABASE_URL: string;
             REDIS_HOST: string;
             REDIS_PORT: string;
-            YOUTUBE_COOKIE: string;
-            YOUTUBE_ID_TOKEN: string;
             DEBUG: boolean;
         }
     }
