@@ -3,7 +3,7 @@ import { SearchResult } from "lavalink-client/dist/types";
 export default class AutocompleteService {
     static autocompleteMap = new Map();
 
-    public static SetMap(userId: string, res: SearchResult) {
+    public static SetSearchResultMap(userId: string, res: SearchResult) {
         if (this.autocompleteMap.has(`${userId}_timeout`))
             clearTimeout(this.autocompleteMap.get(`${userId}_timeout`));
         this.autocompleteMap.set(`${userId}_res`, res);
@@ -13,7 +13,7 @@ export default class AutocompleteService {
         }, 25000));
     }
 
-    public static GetMap(userId: string) {
+    public static GetSearchResultMap(userId: string) {
         let mapRes;
         if (this.autocompleteMap.has(`${userId}_res`))
             mapRes = this.autocompleteMap.get(`${userId}_res`);

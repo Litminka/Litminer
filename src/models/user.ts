@@ -6,7 +6,7 @@ const extention = Prisma.defineExtension({
     name: 'UserModel',
     model: {
         user: {
-            async createUser(user: DSUser, litminkaId: string) {
+            async createUser(user: DSUser, litminkaId?: string) {
                 const { id, username, avatar } = user;
                 await prisma.user.create({
                     data: {
@@ -43,7 +43,7 @@ const extention = Prisma.defineExtension({
             },
 
             async getSettings(discordId: string) {
-                return await prisma.user.findFirst({
+                return await prisma.user.findFirstOrThrow({
                     where: {
                         discordId
                     }

@@ -4,6 +4,7 @@ import QueueEmptyError from "../errors/queue/QueueEmptyError";
 import { CustomRequester, EmbededTrack } from "../typings/client";
 import { formatMS_HHMMSS } from "../utils/time";
 import BaseEmbeds from "./BaseEmbeds";
+import NotPlayingError from "../errors/player/NotPlayingError";
 
 export default class MusicEmbeds {
     static replacements = {
@@ -115,6 +116,7 @@ export default class MusicEmbeds {
 
     public static Current(player: Player) {
         const track = player.queue.current;
+        if (!track) throw new NotPlayingError();
         const duration = track.info.duration;
         const position = player.position;
         const embed = BaseEmbeds.Audio(`${track.info.title}`.substring(0, 256))
@@ -133,7 +135,7 @@ export default class MusicEmbeds {
                 }
             ])
         if (/^https?:\/\//.test(track.info.uri)) embed.setURL(track.info.uri);
-        return embed;
+        return [embed];
     }
 }
 

@@ -12,7 +12,8 @@ const extention = Prisma.defineExtension({
                         name: track.info.title,
                         url: track.info.uri,
                         duration: track.info.duration,
-                        author: track.info.author
+                        author: track.info.author,
+                        source: track.info.sourceName
                     }
                 })
             }

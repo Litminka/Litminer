@@ -44,7 +44,7 @@ export async function PlayTrackSubcommand({client, interaction}: ExecuteOptions)
     // #endregion
     // #region Searching for track
     const src = (interaction.options as CommandInteractionOptionResolver).getString("source") as SearchPlatform | undefined;
-    const fromAutoComplete = (Number(query.replace("autocomplete_", "")) >= 0) && AutocompleteService.GetMap(interaction.user.id);
+    const fromAutoComplete = (Number(query.replace("autocomplete_", "")) >= 0) && AutocompleteService.GetSearchResultMap(interaction.user.id);
 
     const response = (fromAutoComplete || await player.search({ query: query, source: src }, interaction.user)) as SearchResult;
 
@@ -102,7 +102,7 @@ export async function PlayTrackSubcommandAutocomplete({client, interaction}: Aut
     if (!res.tracks.length) return await interaction.respond([{ name: `No Tracks found`, value: "nothing_found" }]);
     // #endregion
     // #region Setting autocomplete map
-    AutocompleteService.SetMap(interaction.user.id, res);
+    AutocompleteService.SetSearchResultMap(interaction.user.id, res);
     await interaction.respond(
         res.loadType === "playlist" ?
             [{ name: `Playlist [${res.tracks.length} Tracks] - ${res.playlist?.title}`, value: `autocomplete_0` }]
