@@ -61,7 +61,7 @@ export default class AudioService {
                 tracks: [...previousTracks.reverse(), player.queue.current, ...player.queue.tracks as Track[]]
             }, new QueueSaver(player.LavalinkManager.options.queueOptions), player.LavalinkManager.options.queueOptions);
 
-            return await AudioService.play(player, { clientTrack: newCurrent });
+            return await AudioService.play(player);
         }
         await player.skip(shouldSkip);
     }
