@@ -1,5 +1,8 @@
 import { ButtonBuilder, ButtonStyle } from "discord.js";
 
+/**
+ * @deprecated Use `ActionRowButton` instead.
+ */
 export default class BaseButtons {
 
     public static Button(id: string, label?: string, emoji?: string): ButtonBuilder {
