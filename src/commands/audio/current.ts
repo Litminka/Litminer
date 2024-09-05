@@ -17,9 +17,8 @@ export default {
         if (!current) throw new NotPlayingError();
 
         const currentTrackEmbed = new CurrentTrackEmbed({
-            userId: interaction.user.id,
-            object: player
-        }, MusicEmbeds.Current);
+            userId: interaction.user.id
+        }, MusicEmbeds.Current, player);
 
         await currentTrackEmbed.initialize();
         const message = currentTrackEmbed.renderMessage();
@@ -28,5 +27,6 @@ export default {
             ...message
         })
         currentTrackEmbed.createResponseCollector(response);
+        await currentTrackEmbed.startUpdating();
     }
 } as Command;

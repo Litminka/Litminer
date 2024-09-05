@@ -1,4 +1,4 @@
-import { EmbedBuilder, InteractionResponse, ComponentType, ButtonInteraction, ActionRowBuilder, ButtonBuilder, ButtonComponentData, DiscordjsError, DiscordjsErrorCodes, ModalSubmitInteraction, ModalBuilder, TextInputBuilder, TextInputStyle, ChatInputCommandInteraction, Interaction } from "discord.js";
+import { ButtonInteraction, ActionRowBuilder, ButtonComponentData, DiscordjsError, DiscordjsErrorCodes, ModalSubmitInteraction, ModalBuilder, TextInputBuilder, TextInputStyle, ChatInputCommandInteraction, Interaction } from "discord.js";
 import BaseError from "../../errors/BaseError";
 import BaseEmbeds from "../BaseEmbeds";
 import { LitminerDebug } from "../../utils/LitminerDebug";
@@ -7,35 +7,16 @@ import ActionRow, { ActionRowExecuteParameters } from "../actionRow/ActionRow";
 import AudioService, { SeekOptions } from "../../services/AudioService";
 import ActionRowPrimaryButton from "../buttons/ActionRowPrimaryButton";
 import ActionRowSecondaryButton from "../buttons/ActionRowSecondaryButton";
-import { delay } from "../../utils/time";
 import { Playlist, Track } from "@prisma/client";
 import prisma from "../../db";
+import InteractableEmbed, { renderEmbedCallBack } from "./InteractableEmbed";
 
-export type listCallback = (userId: string, page: number, pageLimit: number, ...params: unknown[]) => Promise<{
-    list: unknown[],
-    count: number
-}>
-
-export type renderEmbedCallBack = (data: unknown) => EmbedBuilder[]
-
-export interface EmbedData {
-    userId: string,
-    listLength?: number,
-    list?: unknown[],
-    object?: unknown
-}
-
-export default class CurrentTrackEmbed {
-    protected userDiscordId = ``;
-    protected player: Player = null;
-    protected currentTrack: LVTrack = null;
-    protected renderEmbedsCallback: renderEmbedCallBack = null;
-    protected rows: ActionRow[] = [];
-    protected params: unknown[] = [];
+export default class CurrentTrackEmbed extends InteractableEmbed {
+    private player: Player = null;
+    private currentTrack: LVTrack = null;
+    private seekDuration: number = 10;
 
     private playlistConfirmationMessage = `DELETE`;
-
-    protected response: InteractionResponse;
 
     private _currentPlaylistIndex = 0;
     private set currentPlaylistIndex(index: number) {
@@ -47,11 +28,11 @@ export default class CurrentTrackEmbed {
         return this._currentPlaylistIndex;
     }
 
-    protected playlists: Playlist[] = [];
-    protected prevSelectablePlaylist: Playlist = null;
-    protected selectedPlaylist: Playlist = null;
-    protected selectedPlaylistTracks: Track[] = [];
-    protected nextSelectablePlaylist: Playlist = null;
+    private playlists: Playlist[] = [];
+    private prevSelectablePlaylist: Playlist = null;
+    private selectedPlaylist: Playlist = null;
+    private selectedPlaylistTracks: Track[] = [];
+    private nextSelectablePlaylist: Playlist = null;
 
     private playlistNameTextInput = new TextInputBuilder().setCustomId(`plName`).setLabel(`Введите название нового плейлиста`).setStyle(TextInputStyle.Short);
     private playlistNameActionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(this.playlistNameTextInput);
@@ -65,7 +46,7 @@ export default class CurrentTrackEmbed {
         async () => {
             await AudioService.skip(this.player, -1)
         },
-        { emoji: `⏮️` } as ButtonComponentData
+        { emoji: `⬅️` } as ButtonComponentData
     );
 
     private toStartButton = ActionRowSecondaryButton.createButton("toStart",
@@ -77,7 +58,7 @@ export default class CurrentTrackEmbed {
 
     private backSeekButton = ActionRowSecondaryButton.createButton("bseek",
         async () => {
-            await AudioService.seek(this.player, { rewind: -5 } as SeekOptions)
+            await AudioService.seek(this.player, { rewind: -this.seekDuration } as SeekOptions)
         },
         { emoji: `⏪` } as ButtonComponentData
     );
@@ -98,7 +79,7 @@ export default class CurrentTrackEmbed {
 
     private forwardSeekButton = ActionRowSecondaryButton.createButton("fseek",
         async () => {
-            await AudioService.seek(this.player, { rewind: 5 } as SeekOptions)
+            await AudioService.seek(this.player, { rewind: this.seekDuration } as SeekOptions)
         },
         { emoji: `⏩` } as ButtonComponentData
     );
@@ -107,7 +88,7 @@ export default class CurrentTrackEmbed {
         async () => {
             await AudioService.skip(this.player, 1)
         },
-        { emoji: `⏭️` } as ButtonComponentData
+        { emoji: `➡️` } as ButtonComponentData
     );
 
     private trackComponents = new ActionRow().addButtons([
@@ -171,16 +152,13 @@ export default class CurrentTrackEmbed {
         this.deletePlaylistButton
     ]);
 
-    constructor({ userId, object }: EmbedData, renderEmbedCallBack: renderEmbedCallBack, ...params: unknown[]) {
-        this.renderEmbedsCallback = renderEmbedCallBack;
-        this.userDiscordId = userId;
-        this.params = params;
-        this.player = object as Player;
-        this.currentTrack = this.player.queue.current;
-    }
-
     public async initialize() {
-        await this.updatePlaylistData()
+        this.player = this.params.at(0) as Player;
+        this.playlistNameModal.setCustomId(`plModal-${this.userDiscordId}`);
+        this.playlistDeleteModal.setCustomId(`plDModal-${this.userDiscordId}`);
+
+        if (!this.player) throw new BaseError(`Audioplayer is not set`);
+        await this.updateListData();
         this.setActionRows();
         this.setButtonsState();
     }
@@ -189,90 +167,34 @@ export default class CurrentTrackEmbed {
         this.rows = [this.trackComponents, this.playlistComponents];
     }
 
-    protected async updatePlaylistData() {
+    protected async updateListData() {
+        this.currentTrack = this.player.queue.current;
         this.playlists = await prisma.playlist.getPlaylists(this.userDiscordId);
 
         this.prevSelectablePlaylist = this.playlists.at((this.currentPlaylistIndex - 1) % this.playlists.length);
         this.selectedPlaylist = this.playlists.at(this.currentPlaylistIndex);
-        this.selectedPlaylistTracks = (await prisma.playlist.getTracks(this.selectedPlaylist))?.tracks ?? [];
+        this.selectedPlaylistTracks = await prisma.playlist.getTracks(this.selectedPlaylist);
         this.nextSelectablePlaylist = this.playlists.at((this.currentPlaylistIndex + 1) % this.playlists.length);
     }
 
     public renderMessage() {
         return {
-            embeds: this.renderEmbedsCallback(this.player),
-            components: this.getActionRows()
+            embeds: this.currentTrack ? this.renderEmbedsCallback(this.currentTrack, this.player.position) : undefined,
+            components: this.currentTrack ? this.getActionRows() : []
         }
     }
 
-    public async createResponseCollector(response: InteractionResponse) {
-        this.response = response;
-        this.playlistNameModal.setCustomId(`plModal-${this.userDiscordId}`);
-        this.playlistDeleteModal.setCustomId(`plDModal-${this.userDiscordId}`);
-
-        const collector = response.createMessageComponentCollector({
-            componentType: ComponentType.Button,
-            time: 600000,
-            filter: i => i.user.id === this.userDiscordId
-        })
-
-        collector.on("collect", async (buttonInteraction) => {
-            try {
-                const buttonId = this.getButtonId(buttonInteraction);
-                LitminerDebug.Debug(`${buttonId} interaction was detected`);
-                const actionRow = this.findActionRow(buttonId);
-                if (typeof actionRow === "undefined") throw new BaseError(`No action row with \"${buttonId}\" button id was found`);
-                const interactableButton = actionRow.find(buttonId);
-                if (interactableButton.isInteractionDeferred) {
-                    LitminerDebug.Debug(`Interaction deferred`);
-                    await buttonInteraction.deferUpdate();
-                }
-                await actionRow.execute(buttonId, { track: this.currentTrack, interaction: buttonInteraction });
-
-                await this.updatePlaylistData();
-                this.setButtonsState();
-
-                const embeds = this.renderEmbedsCallback(this.player);
-
-                return await response.edit({
-                    embeds,
-                    components: this.getActionRows()
-                });
-            } catch (error) {
-                LitminerDebug.Error(error.stack);
-                return await response.edit({
-                    embeds: [BaseEmbeds.Error(error.message)],
-                    components: []
-                })
-            }
-        });
-
-        collector.on("end", async () => {
-            await response.edit({
-                components: [],
-            });
-        });
-
-        while (this.player.playing && this.currentTrack == this.player.queue.current) {
-            delay(500);
-            await response.edit({
-                embeds: this.renderEmbedsCallback(this.player)
-            })
-        }
-        return collector;
+    protected updateCondition(): boolean {
+        return typeof this.currentTrack !== `undefined`;
     }
 
-    protected getButtonId(button: ButtonInteraction) {
-        const selection = button.customId;
-        return selection;
-    }
-
-    protected findActionRow(buttonId: string): ActionRow {
-        return this.rows.filter(row => row.find(buttonId)).at(0);
+    protected extendExecuteParameters(params: ActionRowExecuteParameters): ActionRowExecuteParameters {
+        return { ...params, track: this.currentTrack };
     }
 
     protected setButtonsState() {
-        this.trackComponents.showButton(this.backSkipButton.id);
+        this.trackComponents.hideButton(this.backSkipButton.id);
+        this.trackComponents.showButton(this.toStartButton.id);
         this.trackComponents.showButton(this.pauseButton.id);
         this.trackComponents.hideButton(this.unpauseButton.id);
         this.trackComponents.hideButton(this.toStartButton.id);
@@ -283,7 +205,10 @@ export default class CurrentTrackEmbed {
             this.trackComponents.hideButton(this.pauseButton.id);
             this.trackComponents.showButton(this.unpauseButton.id);
         }
-        if (this.player.position >= 5000) {
+        if (this.player.queue.previous.length >= 1 && this.player.position < 5000) {
+            this.trackComponents.showButton(this.backSkipButton.id);
+            this.trackComponents.hideButton(this.toStartButton.id);
+        } else {
             this.trackComponents.hideButton(this.backSkipButton.id);
             this.trackComponents.showButton(this.toStartButton.id);
         }
@@ -313,23 +238,19 @@ export default class CurrentTrackEmbed {
         if (this.playlists.length <= 1) {
             this.playlistComponents.hideButton(this.nextPlaylistButton.id);
         }
-        if (this.selectedPlaylistTracks.length !== 0 && this.selectedPlaylistTracks.filter(track => track.url === this.currentTrack.info.uri).length !== 0) {
+        if (this.selectedPlaylistTracks.length !== 0 && this.selectedPlaylistTracks.filter(track => track.url === this.currentTrack?.info.uri).length !== 0) {
             this.playlistComponents.hideButton(this.addTrackButton.id);
             this.playlistComponents.showButton(this.removeTrackButton.id);
         }
     }
 
-    protected getActionRows() {
-        return this.rows.map(row => row.createActionRow());
-    }
-
     private async createPlaylist({ interaction: buttonInteraction }: ActionRowExecuteParameters) {
         await (buttonInteraction as ButtonInteraction).showModal(this.playlistNameModal);
 
-        const filter = (i: ModalSubmitInteraction) => i.customId === `plModal-${this.userDiscordId}`
+        const filter = (i: ModalSubmitInteraction) => i.customId === `plModal-${this.userDiscordId}`;
 
         try {
-            const modalSubmit = await (buttonInteraction as ButtonInteraction).awaitModalSubmit({ filter, time: 30000 });
+            const modalSubmit = await (buttonInteraction as ButtonInteraction).awaitModalSubmit({ filter, time: 20000 });
             const playlistName = modalSubmit.fields.getTextInputValue(this.playlistNameTextInput.data.custom_id);
             await prisma.playlist.createPlaylist(playlistName, this.userDiscordId);
 
@@ -342,7 +263,7 @@ export default class CurrentTrackEmbed {
             if (!(error instanceof DiscordjsError)) return;
             let message: string = error.message;
             if (error.code === DiscordjsErrorCodes.InteractionCollectorError)
-                message = `Время действия модального окна истекло`;
+                message = `Создание плейлиста прервано. Время действия модального окна истекло.`;
             await (this.response.interaction as ChatInputCommandInteraction).followUp({
                 ephemeral: true,
                 embeds: [BaseEmbeds.Error(`${message}`)]
@@ -356,7 +277,7 @@ export default class CurrentTrackEmbed {
         const filter = (i: ModalSubmitInteraction) => i.customId === `plDModal-${this.userDiscordId}`;
 
         try {
-            const modalSubmit = await (buttonInteraction as ButtonInteraction).awaitModalSubmit({ filter, time: 30000 });
+            const modalSubmit = await (buttonInteraction as ButtonInteraction).awaitModalSubmit({ filter, time: 20000 });
             const confirmationMessage = modalSubmit.fields.getTextInputValue(this.playlistDeleteTextInput.data.custom_id);
             if (this.playlistConfirmationMessage === confirmationMessage.toUpperCase()) {
                 await prisma.playlist.deletePlaylist(this.selectedPlaylist.id, this.userDiscordId);
@@ -368,14 +289,14 @@ export default class CurrentTrackEmbed {
 
             await modalSubmit.reply({
                 ephemeral: true,
-                embeds: [BaseEmbeds.Error(`Удаление прервано. Подтверждение не было получено`)]
+                embeds: [BaseEmbeds.Error(`Удаление плейлиста прервано. Подтверждение не было получено.`)]
             })
         }
         catch (error) {
             if (!(error instanceof DiscordjsError)) return;
             let message: string = error.message;
             if (error.code === DiscordjsErrorCodes.InteractionCollectorError)
-                message = `Время действия модального окна истекло`;
+                message = `Удаление плейлиста прервано. Время действия модального окна истекло.`;
             await (this.response.interaction as ChatInputCommandInteraction).followUp({
                 ephemeral: true,
                 embeds: [BaseEmbeds.Error(`${message}`)]

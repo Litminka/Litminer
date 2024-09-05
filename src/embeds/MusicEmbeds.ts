@@ -114,11 +114,9 @@ export default class MusicEmbeds {
         return embed;
     }
 
-    public static Current(player: Player) {
-        const track = player.queue.current;
+    public static Current(track: Track, trackPosition: number) {
         if (!track) throw new NotPlayingError();
         const duration = track.info.duration;
-        const position = player.position;
         const embed = BaseEmbeds.Audio(`${track.info.title}`.substring(0, 256))
             .setAuthor({ name: track.info.author })
             .setImage(track.info.artworkUrl)
@@ -130,7 +128,7 @@ export default class MusicEmbeds {
                 },
                 {
                     name: `**Progress**`,
-                    value: `${formatMS_HHMMSS(position)} / ${formatMS_HHMMSS(duration)}`,
+                    value: `${formatMS_HHMMSS(trackPosition)} / ${formatMS_HHMMSS(duration)}`,
                     inline: true
                 }
             ])

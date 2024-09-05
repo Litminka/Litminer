@@ -1,9 +1,7 @@
 import {  TextChannel } from "discord.js";
 import { BotClient } from "../structures/BotClient";
 import MusicEmbeds from "../embeds/MusicEmbeds";
-import ClientEmbeds from "../embeds/ClientEmbeds";
 import { LitminerDebug } from "../utils/LitminerDebug";
-
 
 export function PlayerEvents(client:BotClient) {
     /**
@@ -12,14 +10,7 @@ export function PlayerEvents(client:BotClient) {
     client.lavalink.on("playerCreate", (player) => {
         LitminerDebug.Success(`${player.guildId} Created a Player`);
     }).on("playerDestroy", (player, reason) => {
-        LitminerDebug.Warning(`${player.guildId} Player got Destroyed`);
-        const channel = client.channels.cache.get(player.textChannelId!) as TextChannel;
-        if(!channel) return LitminerDebug.Error(`No Channel? ${player}`);
-        channel.send({
-            embeds: [
-                ClientEmbeds.PlayerDestroyed(reason)
-            ]
-        })
+        LitminerDebug.Warning(`${player.guildId} Player got Destroyed - (${reason})`);
     }).on("playerDisconnect", (player, voiceChannelId) => {
         LitminerDebug.Success(`${player.guildId} Player disconnected the Voice Channel, Old VCID - ${voiceChannelId}`);
     }).on("playerMove", (player, oldVoiceChannelId, newVoiceChannelId) => {
@@ -41,21 +32,13 @@ export function PlayerEvents(client:BotClient) {
             ]
         })
     }).on("trackEnd", (player, track, payload) => {
-        LitminerDebug.Success(`${player.guildId} Finished playing ${track.info.title}`)
+        LitminerDebug.Success(`${player.guildId} Finished playing ${track.info.title}`);
     }).on("trackError", (player, track, payload) => {
-        LitminerDebug.Error(`${player.guildId} Errored while Playing ${track?.info?.title}, Data - ${JSON.stringify(payload)}`)
+        LitminerDebug.Error(`${player.guildId} Errored while Playing ${track?.info?.title}, Data - ${JSON.stringify(payload)}`);
     }).on("trackStuck", (player, track, payload) => {
-        LitminerDebug.Warning(`${player.guildId} Got Stuck while Playing ${track?.info?.title}, Data - ${JSON.stringify(payload)}`)
-        
+        LitminerDebug.Warning(`${player.guildId} Got Stuck while Playing ${track?.info?.title}, Data - ${JSON.stringify(payload)}`);
     }).on("queueEnd", (player, track, payload) => {
-        LitminerDebug.Warning(`${player.guildId} No more tracks in the queue, after playing ${track?.info?.title || track}`)
-        const channel = client.channels.cache.get(player.textChannelId!) as TextChannel;
-        if(!channel) return;
-        channel.send({
-            embeds: [
-                MusicEmbeds.QueueEnded()
-            ]
-        })
+        LitminerDebug.Warning(`${player.guildId} No more tracks in the queue, after playing ${track?.info?.title || track}`);
     }).on("playerUpdate", (player) => {
         // use this event to update the player in the your cache if you want to save the player's data(s) externally!
         /**

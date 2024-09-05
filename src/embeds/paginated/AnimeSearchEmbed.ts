@@ -32,8 +32,8 @@ export default class AnimeSearchEmbed extends PaginatedEmbed {
         this.buttonCommands = {
             "prev": this.previousPage,
             "gPrev": this.previousGroup,
-            "sub": async () => { await APIRequestService.FollowAnime(this.discordId, this.animeToFollow.id, this.groupToFollow.name, this.groupFollowType) },
-            "unsub": async () => { await APIRequestService.UnfollowAnime(this.discordId, this.animeToFollow.id, this.groupToFollow.name); },
+            "sub": async () => { await APIRequestService.FollowAnime(this.userDiscordId, this.animeToFollow.id, this.groupToFollow.name, this.groupFollowType) },
+            "unsub": async () => { await APIRequestService.UnfollowAnime(this.userDiscordId, this.animeToFollow.id, this.groupToFollow.name); },
             "gNext": this.nextGroup,
             "next": this.nextPage,
         }
@@ -83,7 +83,7 @@ export default class AnimeSearchEmbed extends PaginatedEmbed {
     protected async updateListData(page: number) {
         await super.updateListData(page);
         const { id, slug } = this.list.at(0) as Anime;
-        this.animeToFollow = await APIRequestService.GetSingleAnimeFullInfo(this.discordId, slug);
+        this.animeToFollow = await APIRequestService.GetSingleAnimeFullInfo(this.userDiscordId, slug);
         if (this.animeToFollow && id !== this.animeToFollow.id) {
             this.currentGroupIndex = 0;
         }

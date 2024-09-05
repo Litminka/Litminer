@@ -19,7 +19,7 @@ export interface EmbedData {
 }
 
 export default class PaginatedEmbed {
-    protected discordId = ``;
+    protected userDiscordId = ``;
 
     private page: number = 1
     protected pageLimit: number = 5;
@@ -48,7 +48,7 @@ export default class PaginatedEmbed {
         this.renderEmbedsCallback = renderEmbedCallBack;
         this.list = list ?? [];
         this.listLength = listLength ?? 0;
-        this.discordId = userId;
+        this.userDiscordId = userId;
         this.params = params;
     }
 
@@ -71,7 +71,7 @@ export default class PaginatedEmbed {
     }
 
     protected async updateListData(page: number) {
-        const response = await this.updateListCallback(this.discordId, page, this.pageLimit, ...this.params);
+        const response = await this.updateListCallback(this.userDiscordId, page, this.pageLimit, ...this.params);
         
         this.list = response.list;
         this.listLength = response.count;
@@ -88,7 +88,7 @@ export default class PaginatedEmbed {
         const collector = response.createMessageComponentCollector({
             componentType: ComponentType.Button,
             time: 600000,
-            filter: i => i.user.id === response.interaction.user.id
+            filter: i => i.user.id === this.userDiscordId
         })
 
         collector.on("collect", async (button) => {
@@ -105,12 +105,7 @@ export default class PaginatedEmbed {
     
                 this.setButtonsState();
     
-                const embeds = this.renderEmbedsCallback(this.list);
-
-                return await response.edit({
-                    embeds,
-                    components: [this.getActionRow()]
-                });
+                return await response.edit(this.renderMessage());
             } catch(error){
                 LitminerDebug.Error(error.stack);
                 return await response.edit({

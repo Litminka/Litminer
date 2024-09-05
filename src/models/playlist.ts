@@ -84,14 +84,15 @@ const extention = Prisma.defineExtension({
                 })
             },
             async getTracks(playlist: Playlist) {
-                return await prisma.playlist.findFirst({
+                const playlistTracks = await prisma.playlist.findFirst({
                     where: {
                         id: playlist?.id
                     },
                     select:{
                         tracks: true
                     }
-                })
+                });
+                return playlistTracks?.tracks ?? [];
             },
             async removeTracks(list: Playlist, tracks: Track[]) {
                 await prisma.playlist.update({
