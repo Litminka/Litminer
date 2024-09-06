@@ -48,9 +48,9 @@ const extention = Prisma.defineExtension({
                         id: list.id,
                         tracks: {
                             every:{
-                                url:{
+                                identifier:{
                                     in: searchTracks.map((track) => {
-                                        return track.info.uri
+                                        return track.info.identifier
                                     })
                                 }
                             }
@@ -68,11 +68,11 @@ const extention = Prisma.defineExtension({
                             connectOrCreate: tracks.map((track) => {
                                 return {
                                     where: {
-                                        url: track.info.uri
+                                        identifier: track.info.identifier
                                     },
                                     create: {
                                         name: track.info.title,
-                                        url: track.info.uri,
+                                        identifier: track.info.identifier,
                                         duration: track.info.duration,
                                         author: track.info.author,
                                         source: track.info.sourceName
@@ -103,7 +103,7 @@ const extention = Prisma.defineExtension({
                         tracks: {
                             disconnect: tracks.map((track) => {
                                 return {
-                                    url: track.info.uri
+                                    identifier: track.info.identifier
                                 }
                             })
                         }

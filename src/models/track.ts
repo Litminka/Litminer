@@ -10,7 +10,7 @@ const extention = Prisma.defineExtension({
                 await prisma.track.create({
                     data: {
                         name: track.info.title,
-                        url: track.info.uri,
+                        identifier: track.info.identifier,
                         duration: track.info.duration,
                         author: track.info.author,
                         source: track.info.sourceName

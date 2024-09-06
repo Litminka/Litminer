@@ -46,12 +46,12 @@ model Playlist {
 }
 
 model Track {
-  id       Int    @id @default(autoincrement())
-  url      String @unique
-  name     String @unique
-  duration Int
-  author   String
-  source   String
+  id         Int    @id @default(autoincrement())
+  identifier String @unique @default("")
+  name       String @unique
+  duration   Int
+  author     String
+  source     String
 
   playlist Playlist[]
 }

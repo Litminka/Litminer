@@ -12,10 +12,9 @@ plugins:
     # The clients to use for track loading. See below for a list of valid clients.
     # Clients are queried in the order they are given (so the first client is queried first and so on...)
     clients:
-      - TVHTML5EMBEDDED
       - MUSIC
-      - ANDROID
       - WEB
+      - TVHTML5EMBEDDED
 
     WEB: # names are specified as they are written below under "Available Clients".
       # This will disable using the WEB client for video playback.
