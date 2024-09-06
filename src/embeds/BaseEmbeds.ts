@@ -25,8 +25,12 @@ export default class BaseEmbeds {
         return BaseEmbeds.TimestampEmbed(Colors.Green, `✅ ${message}`);
     }
 
+    public static Warning(message: string): EmbedBuilder {
+        return BaseEmbeds.TimestampEmbed(Colors.Yellow, `⚠️ ${message}`);
+    }
+
     public static Info(message: string): EmbedBuilder {
-        return BaseEmbeds.TimestampEmbed(Colors.Aqua, `❗ ${message}`);
+        return BaseEmbeds.TimestampEmbed(Colors.Aqua, `📌 ${message}`);
     }
 
     public static Audio(message: string): EmbedBuilder {
