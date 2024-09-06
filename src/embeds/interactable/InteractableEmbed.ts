@@ -84,6 +84,7 @@ export default class InteractableEmbed {
 
                 return await response.edit(this.renderMessage());
             } catch (error) {
+                this._isUpdating = false;
                 LitminerDebug.Error(error.stack);
                 return await response.edit({
                     embeds: [BaseEmbeds.Error(error.message)],
@@ -93,6 +94,7 @@ export default class InteractableEmbed {
         });
 
         collector.on("end", async () => {
+            this._isUpdating = false;
             await response.edit({
                 components: [],
             });
@@ -103,7 +105,7 @@ export default class InteractableEmbed {
 
     public async startUpdating(): Promise<void> {
         this._isUpdating = true;
-        while (this.updateCondition()) {
+        while (this.isUpdating && this.updateCondition()) {
             delay(1000);
             await this.updateListData();
             this.setButtonsState();

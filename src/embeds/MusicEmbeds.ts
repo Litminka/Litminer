@@ -59,7 +59,7 @@ export default class MusicEmbeds {
         const embed = BaseEmbeds.Success(`Added ${playlist.title} playlist`)
             .setDescription(
                 [
-                    `- **Queue position:** ${lastQueuePosition - tracks.length}`,
+                    `- **Queue position:** ${tracks ? lastQueuePosition - tracks.length : lastQueuePosition}`,
                     playlist.uri ? `**URL:** ${playlist.uri}` : undefined,
                 ].filter(v => typeof v === "string" && v.length).join("\n").substring(0, 4096)
             )

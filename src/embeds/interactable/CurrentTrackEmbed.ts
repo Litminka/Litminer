@@ -238,7 +238,7 @@ export default class CurrentTrackEmbed extends InteractableEmbed {
         if (this.playlists.length <= 1) {
             this.playlistComponents.hideButton(this.nextPlaylistButton.id);
         }
-        if (this.selectedPlaylistTracks.length !== 0 && this.selectedPlaylistTracks.filter(track => track.url === this.currentTrack?.info.uri).length !== 0) {
+        if (this.selectedPlaylistTracks.length !== 0 && this.selectedPlaylistTracks.filter(track => track.identifier === this.currentTrack?.info.identifier).length !== 0) {
             this.playlistComponents.hideButton(this.addTrackButton.id);
             this.playlistComponents.showButton(this.removeTrackButton.id);
         }
