@@ -1,6 +1,6 @@
 
 import { GuildMember, User, VoiceChannel } from "discord.js";
-import { Player, EQBand, RepeatMode, EQList, PlayOptions, SearchQuery, SearchResult, UnresolvedSearchResult, Queue, StoredQueue, Track, QueueSaver } from "lavalink-client";
+import { Player, EQBand, RepeatMode, EQList, PlayOptions, SearchQuery, SearchResult, UnresolvedSearchResult, Queue, Track, QueueSaver } from "lavalink-client";
 import { ExecuteOptions } from "../typings/client";
 import ChannelAccessError from "../errors/interaction/ChannelAccessError";
 import ConnectionError from "../errors/interaction/ConnectionError";
@@ -90,6 +90,22 @@ export default class AudioService {
 
     public static async search(player: Player, query: SearchQuery, requestUser: User): Promise<SearchResult | UnresolvedSearchResult> {
         return await player.search(query, requestUser)
+    }
+
+    //FIXME: Takes too much time to complete, needs new implementation
+    public static async searchAndAddMany(player: Player, queries: SearchQuery[], requestUser: User): Promise<number> {
+        let trackCount: number = 0;
+        for (let query of queries) {
+            try {
+                const searchRes = await AudioService.search(player, query, requestUser);
+                const track = searchRes.tracks.at(0) as Track;
+                await player.queue.add(track);
+                trackCount += 1;
+            } catch (error) {
+                LitminerDebug.Error(error.stack);
+            }
+        }
+        return trackCount;
     }
 
     public static async play(player: Player, options?: Partial<PlayOptions>) {

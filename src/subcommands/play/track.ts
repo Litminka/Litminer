@@ -46,7 +46,7 @@ export async function PlayTrackSubcommand({client, interaction}: ExecuteOptions)
     const src = (interaction.options as CommandInteractionOptionResolver).getString("source") as SearchPlatform | undefined;
     const fromAutoComplete = (Number(query.replace("autocomplete_", "")) >= 0) && AutocompleteService.GetSearchResultMap(interaction.user.id);
 
-    const response = (fromAutoComplete || await player.search({ query: query, source: src }, interaction.user)) as SearchResult;
+    const response = (fromAutoComplete || await AudioService.search(player, { query: query, source: src }, interaction.user)) as SearchResult;
 
     if (!response || !response.tracks?.length) throw new NoTracksError();
     // #endregion

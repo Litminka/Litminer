@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 import { PlayTrackSubcommand, PlayTrackSubcommandAutocomplete } from "../../subcommands/play/track";
-import { PlayListSubcommand, PlayListSubcommandAutocomplete } from "../../subcommands/play/list";
 import { SubCommand } from "../../typings/client";
+import { PlaylistSubcommand, PlaylistSubcommandAutocomplete } from "../../subcommands/play/list";
 
 export default {
     data: new SlashCommandBuilder()
@@ -27,11 +27,11 @@ export default {
         ),
     execute: {
         tracks: async ({ client, interaction }) => await PlayTrackSubcommand({ client, interaction }),
-        list: async ({ client, interaction }) => await PlayListSubcommand({ client, interaction })
+        list: async ({ client, interaction }) => await PlaylistSubcommand({ client, interaction })
     },
 
     autocomplete: {
         tracks: async ({ client, interaction }) => await PlayTrackSubcommandAutocomplete({ client, interaction }),
-        list: async ({ client, interaction }) => await PlayListSubcommandAutocomplete({ client, interaction })
+        list: async ({ client, interaction }) => await PlaylistSubcommandAutocomplete({ client, interaction })
     },
 } as SubCommand;
